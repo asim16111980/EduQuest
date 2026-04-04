@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { useAuthStore } from '@/store/authStore'
 import { useToast } from '@/hooks/useToast'
-import { grades, stages, type Grade } from '@/data/grades'
+import { grades, stages } from '@/data/grades'
+import type { Grade } from '@/types'
 import { STAGE_COLORS, type Stage } from '@/types'
 
 export function Register() {
@@ -17,7 +18,7 @@ export function Register() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
-  const { toasts, add: toast, remove: removeToast } = useToast()
+  const { toasts, add: toast } = useToast()
   const login = useAuthStore((s) => s.login)
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import { grades, stages, getGradeById } from '@/data/grades'
 import { STAGE_COLORS, type Stage } from '@/types'
-import { validatePassword, PASSWORD_HINT } from '@/lib/validate'
+import { validatePassword } from '@/lib/validate'
 
 /**
  * ProfilePage — User profile settings page for EduQuest.

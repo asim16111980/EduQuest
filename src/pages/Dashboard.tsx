@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { BookOpen, Star, Trophy, Clock, ArrowRight, Gamepad2 } from 'lucide-react'
+import { Star, Trophy, Clock, ArrowRight, Gamepad2 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 import { useProgressStore } from '@/store/gameStore'
 import { getGradeById } from '@/data/grades'
@@ -73,7 +73,7 @@ export function Dashboard() {
           <Link key={game.id} to={`/game/${game.id}`} className="block">
             <GameCard
               title={game.title}
-              titleAr={(game as any).title_ar}
+              titleAr={game.title_ar}
               subject={game.subject}
               difficulty={game.difficulty}
               color={stageColors.primary}

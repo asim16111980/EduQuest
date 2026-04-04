@@ -50,7 +50,7 @@ export const games: Game[] = [
   // Grade 10
   { id: 'g10-math-functions', title: 'Function Machine', title_ar: 'آلة الدوال', description: 'Understand functions and graphs', description_ar: 'افهم الدوال والرسوم البيانية', subject: 'math', grade_id: 10, difficulty: 'hard', thumbnail_url: '' },
   { id: 'g10-science-chem', title: 'Chemistry Lab', title_ar: 'مختبر الكيمياء', description: 'Explore chemical reactions and the periodic table', description_ar: 'استكشف التفاعلات الكيميائية والجدول الدوري', subject: 'science', grade_id: 10, difficulty: 'hard', thumbnail_url: '' },
-  { id: 'g10-english-essay', title: 'Essay Builder', description_ar: 'بنّاء المقالات', description: 'Structure and write English essays', description: 'هيكلة وكتابة المقالات الإنجليزية', subject: 'english', grade_id: 10, difficulty: 'hard', thumbnail_url: '' },
+  { id: 'g10-english-essay', title: 'Essay Builder', title_ar: 'بنّاء المقالات', description: 'Structure and write English essays', description_ar: 'هيكلة وكتابة المقالات الإنجليزية', subject: 'english', grade_id: 10, difficulty: 'hard', thumbnail_url: '' },
 
   // Grade 11
   { id: 'g11-math-calc', title: 'Calculus Quest', title_ar: 'رحلة التفاضل', description: 'Introduction to derivatives', description_ar: 'مقدمة في الاشتقاق', subject: 'math', grade_id: 11, difficulty: 'hard', thumbnail_url: '' },

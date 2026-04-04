@@ -7,17 +7,18 @@ interface AuthState {
   isLoading: boolean
   login: (user: User) => void
   logout: () => void
-  setLoading: (l: boolean) => void
+  setLoading: (isLoading: boolean) => void
+  updateUser: (updates: Partial<User>) => void
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isAuthenticated: false,
   isLoading: true,
-  login: (user) => set({ user, isAuthenticated: true, isLoading: false }),
+  login: (user: User) => set({ user, isAuthenticated: true, isLoading: false }),
   logout: () => set({ user: null, isAuthenticated: false, isLoading: false }),
-  setLoading: (isLoading) => set({ isLoading }),
-  updateUser: (updates) => set((state) => ({
+  setLoading: (isLoading: boolean) => set({ isLoading }),
+  updateUser: (updates: Partial<User>) => set((state) => ({
     user: state.user ? { ...state.user, ...updates } : null,
   })),
 }))

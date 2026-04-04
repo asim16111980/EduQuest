@@ -18,7 +18,7 @@ import {
   ChevronRight,
   ChevronLeft,
 } from 'lucide-react'
-import { SessionTimer, AdminSwitch } from '@/components/admin/shared'
+import { SessionTimer } from '@/components/admin/shared'
 import { useAdminStore } from '@/store/adminStore'
 import { logAction } from '@/lib/adminAuth'
 
@@ -83,7 +83,7 @@ export function AdminLayout() {
       </div>
 
       {/* Nav items */}
-      <nav className="flex-1 py-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 py-4 space-y-1 overflow-y-auto" role="navigation" aria-label="Admin navigation">
         {navItems.map((item) => {
           const active = location.pathname === item.path
           return (

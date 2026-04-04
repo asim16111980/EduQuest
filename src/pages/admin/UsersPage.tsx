@@ -6,7 +6,8 @@ import { useState, useMemo } from 'react'
 import { Users as UsersIcon, Download, Eye, Edit, Trash2, Plus } from 'lucide-react'
 import { MOCK_USERS, type MockUser } from '@/data/mockAdminData'
 import { getGradeById } from '@/data/grades'
-import { AdminBadge, AdminModal, AdminConfirmDialog, AdminSwitch } from '@/components/admin/shared'
+import { grades } from '@/data/grades'
+import { AdminBadge, AdminModal, AdminConfirmDialog } from '@/components/admin/shared'
 import { logAction } from '@/lib/adminAuth'
 
 const INITIAL_USERS = [...MOCK_USERS]
@@ -58,31 +59,41 @@ export default function UsersPage() {
   }
 
   const handleAdd = () => {
-    if (!formName || !formEmail || !formGrade) return
+    // SECURITY: Validate all inputs before use
+    const trimmedName = formName.trim()
+    const trimmedEmail = formEmail.trim()
+    if (!trimmedName) return
+    if (!trimmedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) return
+    if (!formGrade) return
     const newUser: MockUser = {
       id: `u${Date.now()}`,
-      name_ar: formName,
-      email: formEmail,
+      name_ar: trimmedName,
+      email: trimmedEmail,
       grade_id: parseInt(formGrade),
       created_at: new Date().toISOString().slice(0, 10),
       status: formStatus,
     }
     setUsers((prev) => [...prev, newUser])
-    logAction('EDIT_USER', formEmail, 'added new user')
+    logAction('EDIT_USER', trimmedEmail, 'added new user')
     setShowAddModal(false)
     resetForm()
   }
 
   const handleEdit = () => {
     if (!showEditModal) return
+    // SECURITY: Validate inputs
+    const trimmedName = formName.trim()
+    const trimmedEmail = formEmail.trim()
+    if (!trimmedName || !trimmedEmail) return
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) return
     setUsers((prev) =>
       prev.map((u) =>
         u.id === showEditModal.id
-          ? { ...u, name_ar: formName, email: formEmail, grade_id: parseInt(formGrade), status: formStatus }
+          ? { ...u, name_ar: trimmedName, email: trimmedEmail, grade_id: parseInt(formGrade), status: formStatus }
           : u
       )
     )
-    logAction('EDIT_USER', showEditModal.email, 'updated user info')
+    logAction('EDIT_USER', trimmedEmail, 'updated user info')
     setShowEditModal(null)
     resetForm()
   }
@@ -148,6 +159,7 @@ export default function UsersPage() {
         <input
           type="search"
           placeholder="بحث بالاسم أو البريد…"
+          aria-label="بحث بالاسم أو البريد"
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(0) }}
           className="flex-1 min-w-[200px] px-4 py-2.5 rounded-xl border border-gray-200 font-body text-sm focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400"
@@ -155,6 +167,7 @@ export default function UsersPage() {
         <select
           value={stageFilter}
           onChange={(e) => { setStageFilter(e.target.value); setPage(0) }}
+          aria-label="تصفية حسب المرحلة"
           className="px-3 py-2.5 rounded-xl border border-gray-200 font-body text-sm bg-white"
         >
           <option value=""> كل المراحل</option>
@@ -165,6 +178,7 @@ export default function UsersPage() {
         <select
           value={statusFilter}
           onChange={(e) => { setStatusFilter(e.target.value); setPage(0) }}
+          aria-label="تصفية حسب الحالة"
           className="px-3 py-2.5 rounded-xl border border-gray-200 font-body text-sm bg-white"
         >
           <option value=""> كل الحالات</option>
@@ -258,7 +272,7 @@ export default function UsersPage() {
           <input type="email" placeholder="البريد الإلكتروني" value={formEmail} onChange={(e) => setFormEmail(e.target.value)} className="w-full mb-3 px-4 py-2.5 rounded-xl border border-gray-200 font-body text-sm" />
           <select value={formGrade} onChange={(e) => setFormGrade(e.target.value)} className="w-full mb-3 px-4 py-2.5 rounded-xl border border-gray-200 font-body text-sm">
             <option value="">اختر الصف</option>
-            {Object.values(grades).flat ? grades.map((g) => <option key={g.id} value={g.id}>{g.name_ar}</option>) : null}
+            {grades.map((g) => <option key={g.id} value={g.id}>{g.name_ar}</option>)}
           </select>
           <div className="flex items-center justify-between mt-2">
             <span className="font-body text-sm text-gray-600">الحالة:</span>

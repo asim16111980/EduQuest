@@ -3,7 +3,7 @@
  * Route: /admin
  */
 import { Link } from 'react-router-dom'
-import { Users, Gamepad2, Trophy, Star, ArrowUp, ArrowDown } from 'lucide-react'
+import { Users, Gamepad2, Trophy, Star } from 'lucide-react'
 import { AdminStatCard } from '@/components/admin/shared'
 import { MOCK_USERS } from '@/data/mockAdminData'
 
@@ -20,7 +20,7 @@ export default function AdminDashboard() {
     { title: 'سحر الهندسة', plays: 176, max: 387 },
   ]
 
-  const timeAgo = (dateStr: string) => {
+  const timeAgo = (dateStr: string): string => {
     const diff = Date.now() - new Date(dateStr).getTime()
     const days = Math.floor(diff / 86400000)
     if (days < 7) return `${days} يوم`

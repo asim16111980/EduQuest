@@ -2,7 +2,7 @@
  * Admin shared UI components for EduQuest admin dashboard.
  * All components use RTL Arabic with Tajawal font.
  */
-import { ReactNode } from 'react'
+import { ReactNode, memo, useEffect, useCallback, useState } from 'react'
 
 // ─── StatCard ─────────────────────────────────────────
 
@@ -14,7 +14,8 @@ interface StatCardProps {
   color: string
 }
 
-export function AdminStatCard({ icon, label, value, trend, color }: StatCardProps) {
+// PERF: Memo prevents unnecessary re-renders on dashboard updates
+export const AdminStatCard = memo(function AdminStatCard({ icon, label, value, trend, color }: StatCardProps) {
   return (
     <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
       <div className="flex items-center justify-between mb-3">
@@ -34,7 +35,7 @@ export function AdminStatCard({ icon, label, value, trend, color }: StatCardProp
       <p className="text-sm font-body text-gray-500 mt-1">{label}</p>
     </div>
   )
-}
+})
 
 // ─── Badge ───────────────────────────────────────────
 
@@ -138,10 +139,23 @@ export function AdminModal({
   confirmLabel = 'تأكيد',
   cancelLabel = 'إلغاء',
 }: AdminModalProps) {
+  // A11Y: Close modal with Escape key
+  const handleEscape = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape') onCancel()
+  }, [onCancel])
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [handleEscape])
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in p-4"
       onClick={onCancel}
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
     >
       <div
         className={`bg-white rounded-3xl shadow-2xl p-6 w-full ${modalSizes[size]} animate-scale-in`}
@@ -182,10 +196,23 @@ interface ConfirmDialogProps {
 }
 
 export function AdminConfirmDialog({ title, message, onConfirm, onCancel, danger = true }: ConfirmDialogProps) {
+  // A11Y: Close dialog with Escape key
+  const handleEscape = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape') onCancel()
+  }, [onCancel])
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [handleEscape])
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in p-4"
       onClick={onCancel}
+      role="alertdialog"
+      aria-modal="true"
+      aria-label={title}
     >
       <div
         className="bg-white rounded-3xl shadow-2xl p-6 w-full max-w-sm animate-scale-in"
@@ -226,7 +253,6 @@ export function AdminConfirmDialog({ title, message, onConfirm, onCancel, danger
 
 // ─── SessionTimer ─────────────────────────────────────
 
-import { useEffect, useState } from 'react'
 
 export function SessionTimer() {
   const [remaining, setRemaining] = useState(30 * 60)
@@ -249,7 +275,7 @@ export function SessionTimer() {
   const color = remaining <= 300 ? 'text-red-500' : remaining <= 600 ? 'text-amber-500' : 'text-gray-400'
 
   return (
-    <span className={`font-body text-xs font-bold tabular-nums ${color}`} dir="ltr">
+    <span className={`font-body text-xs font-bold tabular-nums ${color}`} dir="ltr" aria-label="Session timeout remaining">
       {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
     </span>
   )
@@ -295,14 +321,11 @@ export function AdminDataTable<T>({
 
   const filtered = data.filter((row) => {
     if (search) {
-      const searchableFields = columns
-        .filter((c) => typeof c.key === 'string' && !columns.find(() => false))
-        .map((c) => String(row[c.key as keyof T] ?? ''))
-      if (searchableFields.length === 0 && Object.values(row).some((v) => String(v).includes(search))) {
-        // fallback: search any field
-        return true
-      }
-      const match = searchableFields.some((v) => v.toLowerCase().includes(search.toLowerCase()))
+      // PERF: cast to Record for Object.values since T is not constrained to object
+      const obj = row as Record<string, unknown>
+      const match = Object.values(obj).some((v) =>
+        typeof v === 'string' ? v.toLowerCase().includes(search.toLowerCase()) : String(v ?? '').toLowerCase().includes(search.toLowerCase())
+      )
       if (!match) return false
     }
     return true

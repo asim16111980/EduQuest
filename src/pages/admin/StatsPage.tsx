@@ -3,13 +3,8 @@
  * Route: /admin/stats
  */
 import { useState } from 'react'
-import { BarChart3, Calendar, Download, Star, Trophy } from 'lucide-react'
+import { Calendar, Download, Star, Trophy } from 'lucide-react'
 import { mockWeeklyActiveUsers, mockSubjectPopularity, mockTopStudents } from '@/data/mockAdminData'
-import { AdminBadge, AdminSelect } from '@/components/admin/shared'
-
-const SUBJECT_EMOJI: Record<string, string> = {
-  math: '🔢', arabic: '📝', science: '🔬', english: '🔤', geography: '🌍', history: '🏛️',
-}
 
 const SUBJECT_NAMES_AR: Record<string, string> = {
   math: 'الرياضيات', arabic: 'اللغة العربية', science: 'العلوم', english: 'الإنجليزية', geography: 'الجغرافيا', history: 'التاريخ',

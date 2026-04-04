@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import { Routes, Route, Outlet } from 'react-router-dom'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
@@ -12,13 +13,16 @@ import { GradePage } from '@/pages/GradePage'
 import { GamePage } from '@/pages/GamePage'
 import ProfilePage from '@/pages/ProfilePage'
 import AdminLogin from '@/pages/admin/AdminLogin'
-import AdminDashboard from '@/pages/admin/AdminDashboard'
-import UsersPage from '@/pages/admin/UsersPage'
-import GamesPage from '@/pages/admin/GamesPage'
-import GradesPage from '@/pages/admin/GradesPage'
-import ContentPage from '@/pages/admin/ContentPage'
-import StatsPage from '@/pages/admin/StatsPage'
-import AuditPage from '@/pages/admin/AuditPage'
+import { AdminPageSkeleton } from '@/components/admin/AdminPageSkeleton'
+
+// PERF: Lazy load all admin pages for better initial bundle size
+const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'))
+const UsersPage = lazy(() => import('@/pages/admin/UsersPage'))
+const GamesPage = lazy(() => import('@/pages/admin/GamesPage'))
+const GradesPage = lazy(() => import('@/pages/admin/GradesPage'))
+const ContentPage = lazy(() => import('@/pages/admin/ContentPage'))
+const StatsPage = lazy(() => import('@/pages/admin/StatsPage'))
+const AuditPage = lazy(() => import('@/pages/admin/AuditPage'))
 
 // Student-facing routes with Navbar + Footer
 function StudentLayout() {
@@ -38,13 +42,13 @@ function AdminRoutes() {
   return (
     <Routes>
       <Route path="/" element={<AdminRoute><AdminLayout /></AdminRoute>}>
-        <Route index element={<AdminDashboard />} />
-        <Route path="users" element={<UsersPage />} />
-        <Route path="games" element={<GamesPage />} />
-        <Route path="grades" element={<GradesPage />} />
-        <Route path="content" element={<ContentPage />} />
-        <Route path="stats" element={<StatsPage />} />
-        <Route path="audit" element={<AuditPage />} />
+        <Route index element={<Suspense fallback={<AdminPageSkeleton />}><AdminDashboard /></Suspense>} />
+        <Route path="users" element={<Suspense fallback={<AdminPageSkeleton />}><UsersPage /></Suspense>} />
+        <Route path="games" element={<Suspense fallback={<AdminPageSkeleton />}><GamesPage /></Suspense>} />
+        <Route path="grades" element={<Suspense fallback={<AdminPageSkeleton />}><GradesPage /></Suspense>} />
+        <Route path="content" element={<Suspense fallback={<AdminPageSkeleton />}><ContentPage /></Suspense>} />
+        <Route path="stats" element={<Suspense fallback={<AdminPageSkeleton />}><StatsPage /></Suspense>} />
+        <Route path="audit" element={<Suspense fallback={<AdminPageSkeleton />}><AuditPage /></Suspense>} />
       </Route>
     </Routes>
   )

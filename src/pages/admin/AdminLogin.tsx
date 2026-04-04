@@ -51,7 +51,13 @@ export default function AdminLogin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    if (!email.trim() || !password) return
+    // SECURITY: Validate email format and require fields
+    const trimmedEmail = email.trim()
+    if (!trimmedEmail || !password) return
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      setError('البريد الإلكتروني غير صحيح')
+      return
+    }
 
     const rate = checkRateLimit(email)
     if (!rate.allowed) {

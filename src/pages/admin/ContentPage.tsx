@@ -4,7 +4,7 @@
  */
 import { useState } from 'react'
 import { Image, Bell, Globe, MessageSquare, Save, Upload, Trash2 } from 'lucide-react'
-import { AdminBadge, AdminModal, AdminConfirmDialog, AdminSwitch } from '@/components/admin/shared'
+import { AdminConfirmDialog, AdminSwitch } from '@/components/admin/shared'
 import { logAction } from '@/lib/adminAuth'
 
 // Mock content state
@@ -52,7 +52,6 @@ export default function ContentPage() {
   ]
 
   const [content, setContent] = useState(initialContent)
-  const [editingAnnouncement, setEditingAnnouncement] = useState<any>(null)
   const [newAnnouncementText, setNewAnnouncementText] = useState('')
   const [newAnnouncementColor, setNewAnnouncementColor] = useState('blue')
   const [showDeleteImg, setShowDeleteImg] = useState<number | null>(null)
@@ -180,6 +179,16 @@ export default function ContentPage() {
                 const input = document.createElement('input')
                 input.type = 'file'
                 input.accept = 'image/*'
+                // SECURITY: Validate file type before upload
+                input.onchange = (e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0]
+                  if (!file) return
+                  if (!file.type.startsWith('image/')) {
+                    alert('يرجى اختيار ملف صورة صالح (PNG, JPG, GIF, etc.)')
+                    return
+                  }
+                  // File is valid — in production this would upload to storage
+                }
                 input.click()
               }}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-purple-300 text-purple-600 font-body text-sm font-bold hover:bg-purple-50"

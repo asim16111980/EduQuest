@@ -17,7 +17,9 @@ export interface Grade {
 export interface Game {
   id: string
   title: string
+  title_ar?: string
   description: string
+  description_ar?: string
   subject: string
   grade_id: number
   difficulty: 'easy' | 'medium' | 'hard'

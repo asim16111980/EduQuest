@@ -2,7 +2,6 @@
  * Mock data for admin dashboard — Egyptian student names, games progress, etc.
  * All data is in-memory and reset on page reload.
  */
-import { grades } from '@/data/grades'
 
 export interface MockUser {
   id: string

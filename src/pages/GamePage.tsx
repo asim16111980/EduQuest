@@ -136,7 +136,7 @@ export function GamePage() {
 
   const {
     currentQuestion, totalQuestions, score, correctAnswers,
-    timer, isPlaying, isGameOver, options, correctAnswer,
+    timer, isPlaying, isGameOver, correctAnswer,
     showResult, selectedAnswer, questions,
     initGame, nextQuestion, checkAnswer, resetGame,
   } = useGameStore()
@@ -162,7 +162,7 @@ export function GamePage() {
 
   const handleAnswer = (answer: string) => {
     if (showResult) return
-    const isCorrect = checkAnswer(answer)
+    checkAnswer(answer)
     setTimeout(() => nextQuestion(), 1200)
   }
 
@@ -201,7 +201,7 @@ export function GamePage() {
         <div className="bg-white rounded-3xl shadow-xl p-8 text-center border border-gray-100">
           <div className="text-6xl mb-4">{emojis[game.subject] || '📖'}</div>
           <h1 className="font-display text-3xl font-bold text-gray-800 mb-2">{game.title}</h1>
-          {(game as any).title_ar && <p className="font-arabic text-lg text-gray-400 mb-4" dir="rtl">{(game as any).title_ar}</p>}
+          {game.title_ar && <p className="font-arabic text-lg text-gray-400 mb-4" dir="rtl">{game.title_ar}</p>}
           <p className="font-body text-gray-500 mb-6">{game.description}</p>
           <div className="flex justify-center gap-4 mb-8">
             <span className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-full text-sm font-body font-bold capitalize">{game.subject}</span>

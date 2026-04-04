@@ -4,12 +4,13 @@
  */
 import { useState, useMemo } from 'react'
 import { Gamepad2, Plus, Edit, Trash2, Eye, List, Search } from 'lucide-react'
-import { games, getGamesByGrade, getGameById } from '@/data/games'
+import { games } from '@/data/games'
+import type { Game } from '@/types'
 import { grades, stages, getGradeById } from '@/data/grades'
 import { STAGE_COLORS, type Stage } from '@/types'
 import { AdminModal, AdminConfirmDialog, AdminBadge } from '@/components/admin/shared'
 import { generateMockQuestions, getMockPlayCount } from '@/data/mockAdminData'
-import { logAction, type AuditAction } from '@/lib/adminAuth'
+import { logAction } from '@/lib/adminAuth'
 
 export default function GamesPage() {
   const [tab, setTab] = useState<'games' | 'questions'>('games')
@@ -20,8 +21,8 @@ export default function GamesPage() {
 
   // Modals
   const [showCreateModal, setShowCreateModal] = useState(false)
-  const [showEditModal, setShowEditModal] = useState<any>(null)
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState<any>(null)
+  const [showEditModal, setShowEditModal] = useState<Game | null>(null)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<Game | null>(null)
 
   // Form
   const [formTitle, setFormTitle] = useState('')
@@ -33,7 +34,7 @@ export default function GamesPage() {
   const [formDifficulty, setFormDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium')
 
   // Questions
-  const [selectedGame, setSelectedGame] = useState<any>(null)
+  const [selectedGame, setSelectedGame] = useState<Game | null>(null)
 
   const subjects = ['math', 'arabic', 'science', 'english', 'geography', 'history'] as const
   const difficulties = [
@@ -45,7 +46,7 @@ export default function GamesPage() {
   // Filtered games
   const filteredGames = useMemo(() => {
     return games.filter((g) => {
-      if (search && !g.title.includes(search) && !(g as any).title_ar?.includes(search)) return false
+      if (search && !g.title.includes(search) && !g.title_ar?.includes(search)) return false
       if (subjectFilter && g.subject !== subjectFilter) return false
       if (difficultyFilter && g.difficulty !== difficultyFilter) return false
       if (stageFilter) {
@@ -78,9 +79,11 @@ export default function GamesPage() {
   }
 
   const handleSaveGame = () => {
-    if (!formTitle || !formGrade) return
-    // Simulated: in reality this goes to DB
-    logAction(showEditModal ? 'EDIT_GAME' : 'ADD_GAME', formTitle, showEditModal ? 'edited' : 'added')
+    // SECURITY: Validate and trim all inputs
+    const trimmedTitle = formTitle.trim()
+    void formDesc.trim() // trim for future DB integration
+    if (!trimmedTitle || !formGrade) return
+    logAction(showEditModal ? 'EDIT_GAME' : 'ADD_GAME', trimmedTitle, showEditModal ? 'edited' : 'added')
     setShowCreateModal(false)
     setShowEditModal(null)
     resetForm()
@@ -93,11 +96,11 @@ export default function GamesPage() {
     }
   }
 
-  const openEdit = (game: any) => {
+  const openEdit = (game: Game) => {
     setFormTitle(game.title)
-    setFormTitleAr((game as any).title_ar ?? '')
+    setFormTitleAr(game.title_ar ?? '')
     setFormDesc(game.description)
-    setFormDescAr((game as any).description_ar ?? '')
+    setFormDescAr(game.description_ar ?? '')
     setFormSubject(game.subject)
     setFormGrade(String(game.grade_id))
     setFormDifficulty(game.difficulty)
@@ -135,12 +138,13 @@ export default function GamesPage() {
               <input
                 type="search"
                 placeholder="بحث عن لعبة…"
+                aria-label="بحث عن لعبة"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-3 pr-10 py-2.5 rounded-xl border border-gray-200 font-body text-sm focus:outline-none focus:ring-2 focus:ring-purple-200"
               />
             </div>
-            <select value={!subjectFilter} onChange={(e) => setSubjectFilter(e.target.value)} className="px-3 py-2.5 rounded-xl border border-gray-200 font-body text-sm bg-white">
+            <select value={subjectFilter} onChange={(e) => setSubjectFilter(e.target.value)} className="px-3 py-2.5 rounded-xl border border-gray-200 font-body text-sm bg-white">
               <option value=""> كل المواد</option>
               {subjects.map((s) => <option key={s} value={s}>{subjectEmojis[s]} {s}</option>)}
             </select>

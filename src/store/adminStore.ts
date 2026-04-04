@@ -50,7 +50,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
       return { success: false, error: 'تم حظر المحاولة مؤقتاً', blockedFor: rate.blockedFor }
     }
 
-    // Credentials check (hardcoded)
+    // SECURITY: Development credentials — must move to environment variables in production
     const ADMIN_EMAIL = 'admin@eduquest.eg'
     const ADMIN_PASSWORD = 'EduQuest@2025!'
 
