@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { Menu, X, User, LogOut, LayoutGrid } from 'lucide-react'
+import { Menu, X, User, LogOut, LayoutGrid, Settings } from 'lucide-react'
 import { useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { Button } from '@/components/ui/Button'
@@ -32,6 +32,12 @@ export function Navbar() {
               <>
                 <Link to="/dashboard" className="px-3 py-2 text-gray-600 hover:text-primary-600 font-body font-semibold text-sm transition-colors">
                   Dashboard
+                </Link>
+                <Link to="/profile" className="px-3 py-2 text-gray-600 hover:text-primary-600 font-body font-semibold text-sm transition-colors flex items-center gap-1">
+                  <Settings className="w-4 h-4" /> Profile
+                </Link>
+                <Link to="/admin/login" className="px-3 py-2 text-gray-400 hover:text-gray-600 font-body font-semibold text-xs transition-colors flex items-center gap-1">
+                  <Settings className="w-3.5 h-3.5" /> Admin
                 </Link>
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-primary-50 rounded-xl">
                   <User className="w-4 h-4 text-primary-500" />
@@ -67,6 +73,10 @@ export function Navbar() {
                 <Link to="/dashboard" onClick={() => setOpen(false)} className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-50">
                   <LayoutGrid className="w-5 h-5 text-gray-500" />
                   <span className="font-body font-semibold text-gray-700">Dashboard</span>
+                </Link>
+                <Link to="/profile" onClick={() => setOpen(false)} className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-50">
+                  <Settings className="w-5 h-5 text-gray-500" />
+                  <span className="font-body font-semibold text-gray-700">Profile</span>
                 </Link>
                 <div className="flex items-center gap-2 px-3 py-2 bg-primary-50 rounded-xl">
                   <User className="w-4 h-4 text-primary-500" />

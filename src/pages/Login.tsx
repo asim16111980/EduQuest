@@ -19,7 +19,7 @@ export function Login() {
     e.preventDefault()
     setError('')
     if (!email.trim() || !email.includes('@')) { setError('Valid email is required'); return }
-    if (password.length < 6) { setError('Password must be at least 6 characters'); return }
+    if (password.length < 8) { setError('Password must be at least 8 characters'); return }
 
     setLoading(true)
     await new Promise((r) => setTimeout(r, 800))

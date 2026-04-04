@@ -25,7 +25,7 @@ export function Register() {
     setError('')
     if (!name.trim()) { setError('Name is required'); return }
     if (!email.trim() || !email.includes('@')) { setError('Valid email is required'); return }
-    if (password.length < 6) { setError('Password must be at least 6 characters'); return }
+    if (password.length < 8) { setError('Password must be at least 8 characters'); return }
     if (!selectedGrade) { setError('Please select your grade'); return }
 
     setLoading(true)
@@ -79,7 +79,7 @@ export function Register() {
           <form onSubmit={handleSubmit}>
             <Input label="Full Name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter your name" />
             <Input label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="student@example.com" />
-            <Input label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" />
+            <Input label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="8+ chars, uppercase, lowercase, number, special char" />
 
             {/* Grade Selection */}
             <div className="mb-4">
