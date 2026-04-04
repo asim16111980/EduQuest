@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>EduQuest</title>
+  <script>
+    (function() {
+      var path = sessionStorage.getItem('gh-redirect');
+      if (path) { location.replace('/EduQuest/' + path); return; }
+      var segs = location.pathname.replace(/^\/EduQuest(\/|$)/, '').split('/').filter(Boolean);
+      if (segs.length) sessionStorage.setItem('gh-redirect', segs.join('/'));
+      location.replace('/EduQuest/');
+    })();
+  </script>
+</head>
+<body></body>
+</html>
