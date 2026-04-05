@@ -14,7 +14,11 @@ function RouterHandler({ children }: { children: React.ReactNode }) {
       }
     }
   }, [])
-  return <BrowserRouter>{children}</BrowserRouter>
+  return (
+    <BrowserRouter basename={import.meta.env.PROD ? '/EduQuest' : ''}>
+      {children}
+    </BrowserRouter>
+  )
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
