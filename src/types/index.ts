@@ -4,6 +4,7 @@ export interface User {
   email: string
   grade_id: number
   created_at: string
+  role?: 'student' | 'admin'
 }
 
 export interface Grade {

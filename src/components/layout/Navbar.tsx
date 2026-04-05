@@ -36,9 +36,11 @@ export function Navbar() {
                 <Link to="/profile" className="px-3 py-2 text-gray-600 hover:text-primary-600 font-body font-semibold text-sm transition-colors flex items-center gap-1">
                   <Settings className="w-4 h-4" /> Profile
                 </Link>
+                {user?.role === 'admin' && (
                 <Link to="/admin/login" className="px-3 py-2 text-gray-400 hover:text-gray-600 font-body font-semibold text-xs transition-colors flex items-center gap-1">
                   <Settings className="w-3.5 h-3.5" /> Admin
                 </Link>
+                )}
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-primary-50 rounded-xl">
                   <User className="w-4 h-4 text-primary-500" />
                   <span className="text-sm font-body font-semibold text-primary-700">{user?.name}</span>

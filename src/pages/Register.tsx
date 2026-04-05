@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/useToast'
 import { grades, stages } from '@/data/grades'
 import type { Grade } from '@/types'
 import { STAGE_COLORS, type Stage } from '@/types'
+import { validatePassword } from '@/lib/validate'
 
 export function Register() {
   const [name, setName] = useState('')
@@ -26,7 +27,8 @@ export function Register() {
     setError('')
     if (!name.trim()) { setError('Name is required'); return }
     if (!email.trim() || !email.includes('@')) { setError('Valid email is required'); return }
-    if (password.length < 8) { setError('Password must be at least 8 characters'); return }
+    const pwErr = validatePassword(password)
+    if (pwErr) { setError(pwErr); return }
     if (!selectedGrade) { setError('Please select your grade'); return }
 
     setLoading(true)

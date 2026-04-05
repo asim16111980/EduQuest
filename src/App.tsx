@@ -3,6 +3,7 @@ import { Routes, Route, Outlet } from 'react-router-dom'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { ProtectedRoute } from '@/components/ui/ProtectedRoute'
+import { PublicOnlyRoute } from '@/components/ui/PublicOnlyRoute'
 import { AdminRoute } from '@/components/ui/AdminRoute'
 import { AdminLayout } from '@/components/layout/AdminLayout'
 import { Landing } from '@/pages/Landing'
@@ -66,8 +67,8 @@ export function App() {
       {/* Student-facing routes — Navbar + Footer */}
       <Route element={<StudentLayout />}>
         <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
+        <Route path="/register" element={<PublicOnlyRoute><Register /></PublicOnlyRoute>} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/grade/:gradeId" element={<ProtectedRoute><GradePage /></ProtectedRoute>} />
         <Route path="/game/:gameId" element={<ProtectedRoute><GamePage /></ProtectedRoute>} />
