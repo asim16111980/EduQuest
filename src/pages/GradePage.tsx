@@ -23,15 +23,6 @@ export function GradePage() {
 
   const colors = STAGE_COLORS[grade.stage as Stage]
 
-  // Group by subject
-  const bySubject = gameList.reduce((acc, g) => {
-    if (!acc[g.subject]) acc[g.subject] = []
-    acc[g.subject].push(g)
-    return acc
-  }, {} as Record<string, typeof gameList>)
-
-  const subjEmojis: Record<string, string> = { math: '🔢', arabic: '📝', science: '🔬', english: '🔤', geography: '🌍', history: '🏛️' }
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       <Link to="/dashboard" className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-700 font-body font-semibold mb-6 transition-colors">
@@ -57,31 +48,23 @@ export function GradePage() {
         </div>
       </div>
 
-      {/* Games by subject */}
-      {Object.entries(bySubject).map(([subject, subjectGames]) => (
-        <div key={subject} className="mb-8">
-          <h2 className="font-display text-xl font-bold text-gray-800 mb-1 flex items-center gap-2">
-            <span className="text-2xl">{subjEmojis[subject] || '📖'}</span>
-            <span className="capitalize">{subject}</span>
-          </h2>
-          <p className="font-body text-sm text-gray-400 mb-4">{subjectGames.length} game{subjectGames.length > 1 ? 's' : ''}</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {subjectGames.map((game) => (
-              <Link key={game.id} to={`/game/${game.id}`} className="block">
-                <GameCard
-                  title={game.title}
-                  titleAr={(game as any).title_ar}
-                  subject={game.subject}
-                  difficulty={game.difficulty}
-                  stars={0}
-                  color={colors.primary}
-                  accent={colors.accent}
-                />
-              </Link>
-            ))}
-          </div>
-        </div>
-      ))}
+      {/* All games in a single grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {gameList.map((game) => (
+          <Link key={game.id} to={`/game/${game.id}`} className="block">
+            <GameCard
+              title={game.title}
+              titleAr={game.title_ar}
+              subject={game.subject}
+              difficulty={game.difficulty}
+              screenshotUrl={game.screenshotUrl}
+              gradeName={grade.name_ar}
+              color={colors.primary}
+              accent={colors.accent}
+            />
+          </Link>
+        ))}
+      </div>
     </div>
   )
 }

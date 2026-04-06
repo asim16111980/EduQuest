@@ -76,6 +76,7 @@ export function Dashboard() {
               titleAr={game.title_ar}
               subject={game.subject}
               difficulty={game.difficulty}
+              screenshotUrl={game.screenshotUrl}
               color={stageColors.primary}
               accent={stageColors.accent}
             />
@@ -88,11 +89,10 @@ export function Dashboard() {
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {Array.from(new Set(userGames.map((g) => g.subject))).map((subj) => {
           const count = userGames.filter((g) => g.subject === subj).length
-          const emojis: Record<string, string> = { math: '🔢', arabic: '📝', science: '🔬', english: '🔤', geography: '🌍', history: '🏛️' }
           return (
             <Card key={subj} hover={false}>
               <div className="p-4 text-center">
-                <span className="text-3xl">{emojis[subj] || '📖'}</span>
+                <span className="text-3xl">{getSubjectEmoji(subj)}</span>
                 <h3 className="font-display font-bold text-sm text-gray-700 mt-2 capitalize">{subj}</h3>
                 <p className="font-body text-xs text-gray-400">{count} game{count > 1 ? 's' : ''}</p>
               </div>
@@ -102,4 +102,9 @@ export function Dashboard() {
       </div>
     </div>
   )
+}
+
+function getSubjectEmoji(subject: string): string {
+  const map: Record<string, string> = { math: '🔢', arabic: '📝', science: '🔬', english: '🔤', geography: '🌍', history: '🏛️' }
+  return map[subject] || '📖'
 }

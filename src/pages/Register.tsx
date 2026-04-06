@@ -18,33 +18,58 @@ export function Register() {
   const [openStage, setOpenStage] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const navigate = useNavigate()
   const { toasts, add: toast } = useToast()
   const login = useAuthStore((s) => s.login)
+  const register = useAuthStore((s) => s.register)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    if (!name.trim()) { setError('Name is required'); return }
-    if (!email.trim() || !email.includes('@')) { setError('Valid email is required'); return }
+    setFieldErrors({})
+
+    const trimmedName = name.trim()
+    const trimmedEmail = email.trim()
+    const fe: Record<string, string> = {}
+
+    if (!trimmedName) fe.name = 'الاسم مطلوب'
+    else if (trimmedName.length < 2) fe.name = 'الاسم يجب أن يكون حرفين على الأقل'
+    else if (/\d/.test(trimmedName)) fe.name = 'الاسم لا يجب أن يحتوي على أرقام'
+
+    if (!trimmedEmail) fe.email = 'البريد الإلكتروني مطلوب'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) fe.email = 'البريد الإلكتروني غير صحيح'
+
     const pwErr = validatePassword(password)
-    if (pwErr) { setError(pwErr); return }
+    if (pwErr) fe.password = pwErr
+
+    if (Object.keys(fe).length > 0) {
+      setFieldErrors(fe)
+      return
+    }
+
     if (!selectedGrade) { setError('Please select your grade'); return }
 
     setLoading(true)
-    // Simulated registration (Supabase auth would go here)
-    await new Promise((r) => setTimeout(r, 800))
+    const result = await register(trimmedName, trimmedEmail, password, selectedGrade.id)
+    setLoading(false)
 
-    const user = {
-      id: Date.now().toString(),
-      name: name.trim(),
-      email: email.trim(),
-      grade_id: selectedGrade.id,
-      created_at: new Date().toISOString(),
+    if (result.success) {
+      // Auto-login
+      const lr = await login(trimmedEmail, password)
+      if (lr.success) {
+        toast('Welcome to EduQuest! 🎉', 'success')
+        navigate('/dashboard')
+      } else {
+        setError(lr.error ?? 'Registration succeeded but auto-login failed')
+      }
+    } else {
+      if (result.error?.includes('مسجل مسبقاً')) {
+        fe.email = result.error
+      } else {
+        setError(result.error ?? 'Registration failed')
+      }
     }
-    login(user)
-    toast('Welcome to EduQuest! 🎉', 'success')
-    navigate('/dashboard')
   }
 
   return (
@@ -80,9 +105,29 @@ export function Register() {
           )}
 
           <form onSubmit={handleSubmit}>
-            <Input label="Full Name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter your name" />
-            <Input label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="student@example.com" />
-            <Input label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="8+ chars, uppercase, lowercase, number, special char" />
+            <Input
+              label="Full Name"
+              value={name}
+              onChange={(e) => { setName(e.target.value); setFieldErrors((p) => ({ ...p, name: '' })); setError('') }}
+              placeholder="Enter your name"
+              error={fieldErrors.name}
+            />
+            <Input
+              label="Email"
+              type="email"
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); setFieldErrors((p) => ({ ...p, email: '' })); setError('') }}
+              placeholder="student@example.com"
+              error={fieldErrors.email}
+            />
+            <Input
+              label="Password"
+              type="password"
+              value={password}
+              onChange={(e) => { setPassword(e.target.value); setFieldErrors((p) => ({ ...p, password: '' })); setError('') }}
+              placeholder="8+ chars, uppercase, lowercase, number, special char"
+              error={fieldErrors.password}
+            />
 
             {/* Grade Selection */}
             <div className="mb-4">

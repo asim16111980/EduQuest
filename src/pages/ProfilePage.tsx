@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Camera, Eye, EyeOff, Lock, ChevronDown, ChevronUp, AlertTriangle, User, Trash2 } from 'lucide-react'
+import { Camera, Lock, ChevronDown, ChevronUp, AlertTriangle, User, Trash2 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 import { useToast } from '@/hooks/useToast'
 import { Button } from '@/components/ui/Button'
@@ -31,7 +31,6 @@ export default function ProfilePage() {
 
   // Password state
   const [showPasswordSection, setShowPasswordSection] = useState(false)
-  const [showHide, setShowHide] = useState({ cur: false, newPwd: false, confirm: false })
   const [curPwd, setCurPwd] = useState('')
   const [newPwd, setNewPwd] = useState('')
   const [confirmPwd, setConfirmPwd] = useState('')
@@ -125,9 +124,6 @@ export default function ProfilePage() {
     toast('تم حذف الحساب', 'info')
   }
 
-  const togglePwd = (key: keyof typeof showHide) =>
-    setShowHide((prev) => ({ ...prev, [key]: !prev[key] }))
-
   return (
     <div dir="rtl" className="font-tajawal min-h-screen bg-gray-50 py-8 px-4">
       {/* Toasts */}
@@ -191,7 +187,7 @@ export default function ProfilePage() {
               </div>
             </div>
             {avatarPreview && (
-              <p className="text-sm text-gray-500 mt-2 font-body">تم اختيار صورة جديدة — اضغط حفظ لتأكيد التغيير</p>
+              <p className="text-sm text-gray-500 mt-2 font-body">تم اختيار صورة جديدة — اضغط على حفظ لتأكيد التغيير</p>
             )}
           </div>
         </Card>
@@ -210,6 +206,7 @@ export default function ProfilePage() {
             error={errors.name}
             placeholder="أدخل اسمك الكامل"
             className="rtl"
+            isRTL
           />
 
           <Input
@@ -307,59 +304,35 @@ export default function ProfilePage() {
 
           {showPasswordSection && (
             <div className="mt-4 space-y-3 animate-slide-up">
-              <div className="relative">
-                <Input
-                  label="كلمة المرور الحالية"
-                  type={showHide.cur ? 'text' : 'password'}
-                  value={curPwd}
-                  onChange={(e) => { setCurPwd(e.target.value); setErrors((p) => ({ ...p, curPwd: '' })) }}
-                  error={errors.curPwd}
-                  placeholder="أدخل كلمة المرور الحالية"
-                />
-                <button
-                  type="button"
-                  onClick={() => togglePwd('cur')}
-                  className="absolute left-3 top-10 text-gray-400 hover:text-gray-600 p-1"
-                >
-                  {showHide.cur ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
+              <Input
+                label="كلمة المرور الحالية"
+                type="password"
+                dir="ltr"
+                value={curPwd}
+                onChange={(e) => { setCurPwd(e.target.value); setErrors((p) => ({ ...p, curPwd: '' })) }}
+                error={errors.curPwd}
+                placeholder="أدخل كلمة المرور الحالية"
+              />
 
-              <div className="relative">
-                <Input
-                  label="كلمة المرور الجديدة"
-                  type={showHide.newPwd ? 'text' : 'password'}
-                  value={newPwd}
-                  onChange={(e) => { setNewPwd(e.target.value); setErrors((p) => ({ ...p, newPwd: '' })) }}
-                  error={errors.newPwd}
-                  placeholder="8 أحرف على الأقل"
-                />
-                <button
-                  type="button"
-                  onClick={() => togglePwd('newPwd')}
-                  className="absolute left-3 top-10 text-gray-400 hover:text-gray-600 p-1"
-                >
-                  {showHide.newPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
+              <Input
+                label="كلمة المرور الجديدة"
+                type="password"
+                dir="ltr"
+                value={newPwd}
+                onChange={(e) => { setNewPwd(e.target.value); setErrors((p) => ({ ...p, newPwd: '' })) }}
+                error={errors.newPwd}
+                placeholder="8 أحرف على الأقل"
+              />
 
-              <div className="relative">
-                <Input
-                  label="تأكيد كلمة المرور"
-                  type={showHide.confirm ? 'text' : 'password'}
-                  value={confirmPwd}
-                  onChange={(e) => { setConfirmPwd(e.target.value); setErrors((p) => ({ ...p, confirmPwd: '' })) }}
-                  error={errors.confirmPwd}
-                  placeholder="أعد كتابة كلمة المرور الجديدة"
-                />
-                <button
-                  type="button"
-                  onClick={() => togglePwd('confirm')}
-                  className="absolute left-3 top-10 text-gray-400 hover:text-gray-600 p-1"
-                >
-                  {showHide.confirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
+              <Input
+                label="تأكيد كلمة المرور"
+                type="password"
+                dir="ltr"
+                value={confirmPwd}
+                onChange={(e) => { setConfirmPwd(e.target.value); setErrors((p) => ({ ...p, confirmPwd: '' })) }}
+                error={errors.confirmPwd}
+                placeholder="أعد كتابة كلمة المرور الجديدة"
+              />
 
               <Button
                 variant="primary"

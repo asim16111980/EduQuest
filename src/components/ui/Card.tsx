@@ -1,4 +1,5 @@
 import React from 'react'
+import { SUBJ_GRADIENTS, DIFF_COLORS, getDiffLabel, getSubjectArabic } from '@/types'
 
 interface CardProps {
   children: React.ReactNode
@@ -28,51 +29,102 @@ interface GameCardProps {
   subject: string
   difficulty: 'easy' | 'medium' | 'hard'
   stars?: number
+  gradeName?: string
+  screenshotUrl?: string
   onClick?: () => void
-  color: string
-  accent: string
+  color?: string
+  accent?: string
 }
 
-export function GameCard({ title, titleAr, subject, difficulty, stars = 0, onClick, color, accent }: GameCardProps) {
-  const diffColors = { easy: 'bg-emerald-100 text-emerald-700', medium: 'bg-amber-100 text-amber-700', hard: 'bg-red-100 text-red-700' }
-  const subjectEmojis: Record<string, string> = { math: '🔢', arabic: '📝', science: '🔬', english: '🔤', geography: '🌍', history: '🏛️' }
+export function GameCard({
+  title,
+  titleAr,
+  subject,
+  difficulty,
+  stars = 0,
+  gradeName,
+  screenshotUrl,
+  onClick,
+  color,
+  accent,
+}: GameCardProps) {
+  const diff = DIFF_COLORS[difficulty]
+  const bg = SUBJ_GRADIENTS[subject] || SUBJ_GRADIENTS.math
+  const subjectAr = getSubjectArabic(subject)
+  const diffLabel = getDiffLabel(difficulty)
+  const hasScreenshot = screenshotUrl && screenshotUrl.length > 0
 
   return (
     <div
       onClick={onClick}
-      className="group relative bg-white rounded-3xl shadow-md overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer border-2 border-transparent hover:border-primary-200"
+      className="group relative bg-white rounded-3xl shadow-md overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer border-2 border-transparent hover:border-primary-200"
     >
-      {/* Thumbnail */}
-      <div className="relative h-40 flex items-center justify-center" style={{ backgroundColor: color + '15' }}>
-        <span className="text-6xl transform transition-transform duration-300 group-hover:scale-110">{subjectEmojis[subject] || '📖'}</span>
-        <div className="absolute top-3 right-3">
-          <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${diffColors[difficulty]}`}>
-            {difficulty}
+      {/* Top section: screenshot or gradient */}
+      <div className="relative h-36 overflow-hidden flex items-center justify-center" style={{ background: bg }}>
+        {/* Screenshot image */}
+        {hasScreenshot && (
+          <img
+            src={screenshotUrl!}
+            alt={title}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        )}
+
+        {/* Dark overlay for readability */}
+        <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-colors" />
+
+        {/* Subject icon centered on top */}
+        <span
+          className="text-5xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)] transition-transform duration-300 group-hover:scale-110 relative z-10"
+          style={{ lineHeight: 1 }}
+        >
+          {subjectAr}
+        </span>
+
+        {/* Difficulty badge */}
+        <div className="absolute top-2 left-2 z-20">
+          <span
+            className="text-xs font-bold px-2 py-0.5 rounded-full"
+            style={{ backgroundColor: diff.bg, color: diff.text }}
+          >
+            {diffLabel}
           </span>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-5">
-        <h3 className="font-display font-bold text-lg text-gray-800 mb-1">{title}</h3>
-        {titleAr && <p className="font-arabic text-sm text-gray-500 mb-3" dir="rtl">{titleAr}</p>}
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{subject}</span>
-          <div className="flex gap-0.5">
+      {/* Bottom: info */}
+      <div className="p-4">
+        <h3 className="font-display font-bold text-sm text-gray-800 truncate">{title}</h3>
+        {titleAr && <p className="font-arabic text-xs text-gray-400 mt-0.5 truncate" dir="rtl">{titleAr}</p>}
+
+        <div className="flex items-center justify-between mt-2">
+          <div className="flex items-center gap-2">
+            <span
+              className="text-xs font-semibold px-2 py-0.5 rounded-lg"
+              style={{ backgroundColor: diff.bg, color: diff.text }}
+            >
+              {subjectAr}
+            </span>
+            {gradeName && <span className="text-xs text-gray-400 font-body">{gradeName}</span>}
+          </div>
+          <button
+            onClick={(e) => { e.stopPropagation(); onClick && onClick() }}
+            className="text-xs font-bold px-3 py-1 rounded-lg text-white transition-transform hover:scale-105"
+            style={{ background: `linear-gradient(135deg, ${color || '#3B82F6'}, ${accent || '#6366F1'})` }}
+          >
+            ▶ ألعب
+          </button>
+        </div>
+
+        {/* Stars row */}
+        {stars > 0 && (
+          <div className="flex gap-0.5 mt-2">
             {[1, 2, 3].map((s) => (
-              <span key={s} className={`text-lg ${s <= stars ? '' : 'opacity-20'}`}>
-                ⭐
-              </span>
+              <span key={s} className={`text-sm ${s <= stars ? '' : 'opacity-20'}`}>⭐</span>
             ))}
           </div>
-        </div>
+        )}
       </div>
-
-      {/* Hover overlay */}
-      <div
-        className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-        style={{ background: `linear-gradient(135deg, ${color}10, ${accent}10)` }}
-      />
     </div>
   )
 }

@@ -37,7 +37,7 @@ eduquest/
     │   ├── ui/
     │   │   ├── Button.tsx
     │   │   ├── Card.tsx
-    │   │   ├── Input.tsx
+    │   │   ├── Input.tsx           # Auto password show/hide toggle for type="password"
     │   │   ├── Toast.tsx
     │   │   ├── ProtectedRoute.tsx
     │   │   └── AdminRoute.tsx      # Guards admin pages, verifies token + session
@@ -67,7 +67,7 @@ eduquest/
 
 - **Path aliases**: Use `@/` prefix (e.g., `@/components/ui/Button`)
 - **Stage colors**: Primary=blue/yellow, Preparatory=green/teal, Secondary=purple/indigo
-- **Auth**: Currently simulated (localStorage-like mock). Swap in `supabase.auth` for production.
+- **Auth**: Registration + login with localStorage persistence (`eq_registered_users`). Registered users are validated against the store. Passwords stored with `btoa()` mock hash (use bcrypt in production). Field-level validation on all auth forms.
 - **Admin Auth**: JWT-like tokens in `sessionStorage`, rate limiting, 30min session timeout, audit log
 - **Admin pages**: Lazy-loaded via `React.lazy()` in `App.tsx` with `<Suspense>` + `AdminPageSkeleton` fallback
 - **Testing**: Vitest + React Testing Library — 29 unit tests (see `src/test/`)

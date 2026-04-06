@@ -25,6 +25,8 @@ export interface Game {
   grade_id: number
   difficulty: 'easy' | 'medium' | 'hard'
   thumbnail_url: string
+  screenshotUrl?: string
+  subjectIcon: string
 }
 
 export interface UserProgress {
@@ -51,6 +53,38 @@ export const SUBJ_EMOJI: Record<string, string> = {
   english: '🔤',
   geography: '🌍',
   history: '🏛️',
+}
+
+const SUBJECT_ARABIC: Record<string, string> = {
+  math: 'رياضيات',
+  arabic: 'عربي',
+  science: 'علوم',
+  english: 'إنجليزي',
+  geography: 'جغرافيا',
+  history: 'تاريخ',
+}
+
+export const SUBJ_GRADIENTS: Record<string, string> = {
+  math: 'linear-gradient(135deg, #1D9E75, #085041)',
+  arabic: 'linear-gradient(135deg, #D85A30, #4A1B0C)',
+  science: 'linear-gradient(135deg, #378ADD, #042C53)',
+  english: 'linear-gradient(135deg, #7F77DD, #26215C)',
+  geography: 'linear-gradient(135deg, #639922, #173404)',
+  history: 'linear-gradient(135deg, #BA7517, #412402)',
+}
+
+export const DIFF_COLORS: Record<string, { bg: string; text: string }> = {
+  easy: { bg: '#D1FAE5', text: '#065F46' },
+  medium: { bg: '#FEF3C7', text: '#92400E' },
+  hard: { bg: '#FEE2E2', text: '#991B1B' },
+}
+
+export function getDiffLabel(difficulty: 'easy' | 'medium' | 'hard'): string {
+  return difficulty === 'easy' ? 'سهل' : difficulty === 'medium' ? 'متوسط' : 'صعب'
+}
+
+export function getSubjectArabic(subject: string): string {
+  return SUBJECT_ARABIC[subject] || subject
 }
 
 export type ToastType = 'success' | 'error' | 'info'
