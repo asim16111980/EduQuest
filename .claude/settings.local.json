@@ -22,7 +22,8 @@
       "Bash(gh pr *)",
       "Bash(gh auth *)",
       "WebFetch(domain:github.com)",
-      "Bash(gh api *)"
+      "Bash(gh api *)",
+      "Skill(commit-commands:commit-push-pr)"
     ]
   }
 }
