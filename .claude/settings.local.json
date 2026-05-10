@@ -20,7 +20,9 @@
       "Bash(powershell.exe *)",
       "Bash(git push *)",
       "Bash(gh pr *)",
-      "Bash(gh auth *)"
+      "Bash(gh auth *)",
+      "WebFetch(domain:github.com)",
+      "Bash(gh api *)"
     ]
   }
 }
