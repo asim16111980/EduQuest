@@ -42,12 +42,7 @@ FOR SELECT USING (auth.uid() IS NOT NULL);
 -- For admin operations
 CREATE POLICY "Enable full access for super admins"
 ON TABLE TABLE_NAME
-FOR ALL USING (
-  NOT EXISTS (
-    SELECT 1 FROM auth.users 
-    WHERE id = auth.uid() AND role != 'super_admin'
-  )
-);
+FOR ALL USING (auth.jwt() ->> 'app_role' = 'super_admin');
 ```
 
 ### 3. Authentication Configuration

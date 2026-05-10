@@ -8,7 +8,7 @@ description: "Task list for Database Bootstrap Phase 0A implementation"
 **Input**: Design documents from `/specs/001-db-bootstrap/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, quickstart.md
 
-**Tests**: The examples below include test tasks. Tests are OPTIONAL - only include them if explicitly requested in the feature specification.
+**Tests**: The examples below include test tasks. Tests are REQUIRED and must be included for all feature specifications to ensure mandatory acceptance verification.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 

@@ -9,7 +9,7 @@ Required environment variables that must be set in the Railway dashboard:
 ### Supabase Configuration
 - `SUPABASE_URL` - The URL of your Supabase project
 - `SUPABASE_ANON_KEY` - The anonymous public key for Supabase
-- `SUPABASE_SERVICE_ROLE_KEY` - The service role key for admin operations
+- `SUPABASE_SERVICE_ROLE_KEY` - The service role key for admin operations (DO NOT EXPOSE TO CLIENTS / NO LOGGING)
 
 ### Project Configuration
 - `RAILWAY_PROJECT_ID` - Your Railway project ID

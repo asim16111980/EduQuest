@@ -1,6 +1,6 @@
 # Implementation Plan: Database Bootstrap Phase 0A
 
-**Branch**: `001-db-bootstrap` | **Date**: 2026-05-10 | **Spec**: link
+**Branch**: `001-db-bootstrap` | **Date**: 2026-05-10 | **Spec**: `/specs/001-db-bootstrap/spec.md`
 **Input**: Feature specification from `/specs/001-db-bootstrap/spec.md`
 
 **Note**: This template is filled in by the `/speckit-plan` command. See `.specify/templates/plan-template.md` for the execution workflow.
@@ -30,7 +30,7 @@ Initialize a Supabase project for EduQuest admin dashboard with security-first c
 **✅ Database Schema Governance**
 - All future schema changes will use numbered migration files
 - Tables will follow pattern: id UUID, created_at TIMESTAMPTZ, updated_at TIMESTAMPTZ, deleted_at TIMESTAMPTZ (soft deletes via deleted_at column)
-- Supabase Vault will store all secrets
+- Phase 0A: secrets are stored in Railway environment variables (Supabase Vault to be adopted in a later phase)
 
 **✅ Admin-First Design**
 - Dashboard configured for platform operators with role-based access control

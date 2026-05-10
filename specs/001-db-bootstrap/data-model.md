@@ -27,7 +27,7 @@ Stores configuration for Railway deployment and local development.
 - `id` (UUID, Primary Key) - Configuration ID
 - `project_id` (UUID, Foreign Key) - References Supabase Project
 - `variable_name` (String) - Environment variable name
-- `variable_value` (String) - Environment variable value
+- `secret_reference` (String) - Reference to external secret store
 - `environment` (String) - Target environment ("production", "development")
 - `is_sensitive` (Boolean) - Whether the value is secret
 - `created_at` (TIMESTAMPTZ) - Creation timestamp
@@ -105,7 +105,7 @@ CREATE TABLE table_name (
 
 ## Relationships
 
-```
+```text
 Supabase Project
 ├── Environment Configuration (1:many)
 ├── Security Policy (1:many)
@@ -115,7 +115,8 @@ Supabase Project
 
 ## Validation Rules
 
-1. **Environment Variables**: All sensitive values must be encrypted at rest
+1. **Environment Variables**: Raw sensitive values must never be stored; use secret_reference for external secrets
+2. **Secret Storage**: If `is_sensitive` is true, no raw value may be stored
 2. **Security Policies**: Default deny policy must be enabled on all tables
 3. **Auth Configuration**: Site URL must match Railway domain
 4. **Realtime**: Only specified tables can have Realtime enabled

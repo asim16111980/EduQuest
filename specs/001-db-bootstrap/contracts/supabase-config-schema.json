@@ -26,25 +26,28 @@
     },
     "auth": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "site_url": {
           "type": "string",
-          "format": "uri",
-          "pattern": "^https://eduquest-admin\\.railway\\.app$"
+          "const": "https://eduquest-admin.railway.app"
         },
         "redirect_urls": {
           "type": "array",
           "items": {
             "type": "string",
-            "format": "uri"
+            "const": "https://eduquest-admin.railway.app/auth/callback"
           },
-          "minItems": 1
+          "minItems": 1,
+          "maxItems": 1
         },
         "providers": {
           "type": "object",
+          "additionalProperties": false,
           "properties": {
             "email": {
               "type": "object",
+              "additionalProperties": false,
               "properties": {
                 "enabled": {
                   "type": "boolean",
@@ -82,7 +85,7 @@
         },
         "default_policy": {
           "type": "string",
-          "enum": ["deny", "allow"]
+          "const": "deny"
         },
         "tables": {
           "type": "array",

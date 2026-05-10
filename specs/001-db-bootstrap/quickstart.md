@@ -9,7 +9,7 @@
 1. **Railway Account**: Active Railway account with project created
 2. **Supabase CLI**: Installed and authenticated (`supabase login`)
 3. **Git Repository**: Clean working directory
-4. **Environment**: Node.js 18+ for local development
+4. **Environment**: Node.js 20+ for local development
 
 ## Setup Steps
 
@@ -107,7 +107,11 @@ supabase projects list
 
 ```bash
 # Test with Supabase Auth
-npx supabase auth signup --email=test@example.com --password=test123
+node -e "
+const { createClient } = require('@supabase/supabase-js');
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+supabase.auth.signUp({ email: 'test@example.com', password: 'test123' });
+"
 ```
 
 ### Verify Realtime
@@ -119,10 +123,10 @@ npx supabase auth signup --email=test@example.com --password=test123
 ### Environment Variables Check
 
 ```bash
-# Should show all variables
-echo $SUPABASE_URL
-echo $SUPABASE_ANON_KEY
-echo $SUPABASE_SERVICE_ROLE_KEY
+# Check if variables are set (DO NOT print values)
+[ -n "$SUPABASE_URL" ] && echo "SUPABASE_URL is set" || echo "SUPABASE_URL is not set"
+[ -n "$SUPABASE_ANON_KEY" ] && echo "SUPABASE_ANON_KEY is set" || echo "SUPABASE_ANON_KEY is not set"
+[ -n "$SUPABASE_SERVICE_ROLE_KEY" ] && echo "SUPABASE_SERVICE_ROLE_KEY is set" || echo "SUPABASE_SERVICE_ROLE_KEY is not set"
 ```
 
 ## Troubleshooting
