@@ -37,13 +37,15 @@
 ### 3. Enable Row Level Security
 
 1. In Supabase Dashboard → Settings → Database
-2. Run the following SQL in the SQL Editor:
+2. Run the following SQL in the SQL Editor to enable RLS globally:
 
 ```sql
 -- Enable RLS globally on all tables
--- This will be run for each table during schema migrations
--- For now, verify the setting exists
+ALTER SYSTEM rls_enabled = true;
+SELECT * FROM pg_settings WHERE name = 'rls_enabled';
 ```
+
+> Note: RLS will be enabled for individual tables during schema migrations via the security-config.sh script.
 
 ### 4. Configure Realtime
 
@@ -62,6 +64,7 @@ Add these to your Railway project settings:
 ```env
 SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 SUPABASE_ANON_KEY=your_anon_key_here
+# ⚠️ SERVER-ONLY KEY: DO NOT EXPOSE TO CLIENTS / NO LOGGING
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
 ```
 
@@ -72,6 +75,7 @@ Create `.env.local` in project root:
 ```env
 SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 SUPABASE_ANON_KEY=your_anon_key_here
+# ⚠️ SERVER-ONLY KEY: DO NOT EXPOSE TO CLIENTS / NO LOGGING
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
 ```
 
@@ -110,7 +114,12 @@ supabase projects list
 node -e "
 const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
-supabase.auth.signUp({ email: 'test@example.com', password: 'test123' });
+supabase.auth.signUp({ email: 'test@example.com', password: 'test123' })
+  .then(({ data, error }) => {
+    if (error) console.error('Auth error:', error);
+    else console.log('User created:', data.user);
+    process.exit(0);
+  });
 "
 ```
 
