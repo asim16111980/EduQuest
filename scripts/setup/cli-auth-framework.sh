@@ -21,7 +21,7 @@ check_cli_installed() {
         return 1
     fi
 
-    if ! version=$(supabase --version); then
+    if ! local version=$(supabase --version); then
         log_error "Failed to get Supabase CLI version"
         return 1
     fi
@@ -45,10 +45,7 @@ check_authenticated() {
 
 # Handle authentication
 handle_authentication() {
-    local email="$1"
-    local password="$2"
-
-    log_step "Supabase Authentication"
+    local token="$1"
 
     if check_authenticated; then
         log_success "Already authenticated"
@@ -58,17 +55,17 @@ handle_authentication() {
     log_info "Authentication required"
 
     # If token provided, attempt token authentication
-    if [[ -n "$email" ]]; then
+    if [[ -n "$token" ]]; then
         log_info "Attempting token authentication..."
-        if [[ -n "$password" && "$password" == *"ey"* ]]; then
-            # Looks like a JWT token
-            export SUPABASE_ACCESS_TOKEN="$password"
-            retry_supabase_command "supabase link --project-ref $project_ref" \
+        if [[ "$token" == sbp_* ]]; then
+            # Looks like a Supabase access token with correct prefix
+            export SUPABASE_ACCESS_TOKEN="$token"
+            retry_supabase_command "supabase auth login --token $token" \
                                   "Token authentication" \
                                   3
             return $?
         else
-            log_error "Invalid token format provided"
+            log_error "Invalid token format. Token must start with 'sbp_'"
             return 1
         fi
     else
@@ -77,7 +74,7 @@ handle_authentication() {
         log_info "2. Follow the prompts to authenticate"
         log_info ""
         log_info "Or provide a Supabase access token as argument:"
-        log_info "  $0 --auth-token eyJhbGciOi..."
+        log_info "  $0 --auth-token sbp_eyJhbGciOi..."
         return 1
     fi
 }
@@ -147,8 +144,11 @@ verify_project_setup() {
 
     # Check project link
     if [[ -f "$PROJECT_LINKED_FLAG" ]]; then
-        log_info "Project already linked and verified"
-        return 0
+        local stored_ref=$(cat "$PROJECT_REF_FILE" 2>/dev/null | tr -d '\n\r')
+        if [[ "$stored_ref" == "$project_ref" ]]; then
+            log_info "Project already linked with matching ref"
+            return 0
+        fi
     fi
 
     # Link project if ref provided
@@ -199,44 +199,46 @@ is_setup_complete() {
 }
 
 # Main execution
-case "${1:-help}" in
-    "check-cli")
-        check_cli_installed
-        ;;
-    "check-auth")
-        check_authenticated
-        ;;
-    "auth")
-        handle_authentication "$2" "$3"
-        ;;
-    "link")
-        link_project "$2"
-        ;;
-    "verify")
-        verify_project_setup "$2"
-        ;;
-    "info")
-        get_project_info "$2"
-        ;;
-    "complete")
-        mark_setup_complete "$2"
-        ;;
-    "is-complete")
-        is_setup_complete "$2"
-        ;;
-    "help")
-        echo "Usage: $0 {check-cli|check-auth|auth|link|verify|info|complete|is-complete} [args]"
-        echo "  check-cli     - Check if CLI is installed"
-        echo "  check-auth    - Check authentication status"
-        echo "  auth [email] [password] - Handle authentication"
-        echo "  link <ref>    - Link to project"
-        echo "  verify <ref>  - Verify complete setup"
-        echo "  info <ref>    - Get project information"
-        echo "  complete <phase> - Mark phase as complete"
-        echo "  is-complete <phase> - Check if phase is complete"
-        ;;
-    *)
-        echo "Unknown command: $1"
-        exit 1
-        ;;
-esac
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    case "${1:-help}" in
+        "check-cli")
+            check_cli_installed
+            ;;
+        "check-auth")
+            check_authenticated
+            ;;
+        "auth")
+            handle_authentication "$2"
+            ;;
+        "link")
+            link_project "$2"
+            ;;
+        "verify")
+            verify_project_setup "$2"
+            ;;
+        "info")
+            get_project_info "$2"
+            ;;
+        "complete")
+            mark_setup_complete "$2"
+            ;;
+        "is-complete")
+            is_setup_complete "$2"
+            ;;
+        "help")
+            echo "Usage: $0 {check-cli|check-auth|auth|link|verify|info|complete|is-complete} [args]"
+            echo "  check-cli     - Check if CLI is installed"
+            echo "  check-auth    - Check authentication status"
+            echo "  auth [token] - Handle authentication"
+            echo "  link <ref>    - Link to project"
+            echo "  verify <ref>  - Verify complete setup"
+            echo "  info <ref>    - Get project information"
+            echo "  complete <phase> - Mark phase as complete"
+            echo "  is-complete <phase> - Check if phase is complete"
+            ;;
+        *)
+            echo "Unknown command: $1"
+            exit 1
+            ;;
+    esac
+fi
