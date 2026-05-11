@@ -3,23 +3,10 @@
 # Retry utility functions for transient failures
 # Usage: retry "command" "max_attempts" "delay" "description"
 
+# Note: This script expects logging.sh to be sourced first for logging functions
 MAX_RETRIES=${MAX_RETRIES:-3}
 BASE_DELAY=${BASE_DELAY:-2}
 BACKOFF_FACTOR=${BACKOFF_FACTOR:-2}
-
-log_info() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] INFO: $1"
-}
-
-log_error() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: $1" >&2
-}
-
-log_debug() {
-    if [[ "${DEBUG:-}" == "true" ]]; then
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] DEBUG: $1" >&2
-    fi
-}
 
 retry() {
     local command="$1"
