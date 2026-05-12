@@ -33,8 +33,8 @@ load_env() {
         # Load file
         while IFS= read -r line || [[ -n "$line" ]]; do
             # Skip comments and empty lines
-            [[ "$line" =~ ^\s*# ]] && continue
-            [[ -z "$line" ]] && continue
+            [[ "$line" =~ ^[[:space:]]*# ]] && continue
+            [[ "$line" =~ ^[[:space:]]*$ ]] && continue
 
             # Split line into key and value
             key=${line%%=*}
@@ -130,11 +130,27 @@ validate_required() {
 
 # Validate Railway domain
 validate_railway_domain() {
-    local site_url="${SITE_URL:-https://eduquest-admin.railway.app}"
+    local site_url="${SITE_URL:-}"
 
-    if [[ -n "$site_url" && ! "$site_url" == *.railway.app ]]; then
-        log_warn "Site URL $site_url does not appear to be a Railway domain"
-        return 1
+    # If Railway-only mode is set, enforce Railway domain
+    if [[ -n "$RAILWAY_ONLY" && -n "$site_url" ]]; then
+        # Normalize site_url to host (strip protocol and path)
+        local host="${site_url#*://}"
+        host="${host%%/*}"
+
+        if [[ "$host" != *.railway.app ]]; then
+            log_warn "Site URL $site_url does not appear to be a Railway domain (RAILWAY_ONLY mode)"
+            return 1
+        fi
+    fi
+
+    # If no RAILWAY_ONLY, validate as optional HTTP(S) URL
+    if [[ -n "$site_url" ]]; then
+        # Simple pattern for HTTP(S) URL allowing localhost
+        if [[ ! "$site_url" =~ ^https?://(localhost(:[0-9]+)?|[^/]+)$ ]]; then
+            log_warn "Site URL $site_url is not a valid HTTP(S) URL"
+            return 1
+        fi
     fi
 
     return 0

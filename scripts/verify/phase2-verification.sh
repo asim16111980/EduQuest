@@ -135,31 +135,26 @@ test_logging() {
 test_env_validation() {
     log_info "Testing environment validation..."
 
-    # Save original SUPABASE_URL
-    local original_url="$SUPABASE_URL"
+    # Run validation in a clean environment to avoid false positives
+    (
+        unset SUPABASE_URL SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY
 
-    # Test with empty environment
-    if validate_required; then
-        log_error "✗ Validation should have failed with empty environment"
-        return 1
-    fi
+        # Test with empty environment
+        if validate_required; then
+            log_error "✗ Validation should have failed with empty environment"
+            return 1
+        fi
 
-    # Test with invalid URL
-    export SUPABASE_URL="invalid-url"
-    if validate_var "SUPABASE_URL" "$SUPABASE_URL" "$URL_PATTERN"; then
-        log_error "✗ URL validation should have failed"
-        return 1
-    fi
+        # Test with invalid URL
+        export SUPABASE_URL="invalid-url"
+        if validate_var "SUPABASE_URL" "$SUPABASE_URL" "$URL_PATTERN"; then
+            log_error "✗ URL validation should have failed"
+            return 1
+        fi
 
-    # Restore original SUPABASE_URL
-    if [[ -n "$original_url" ]]; then
-        export SUPABASE_URL="$original_url"
-    else
-        unset SUPABASE_URL
-    fi
-
-    log_success "✓ Environment validation working correctly"
-    return 0
+        log_success "✓ Environment validation working correctly"
+        return 0
+    )
 }
 
 # Test 6: Test CLI framework functions
@@ -250,24 +245,11 @@ run_all_tests() {
     # Execute each test
     for test in "${tests[@]}"; do
         total_tests=$((total_tests + 1))
-
-        # Special handling for retry test which expects to fail
-        if [[ "$test" == "test_retry_utilities" ]]; then
-            $test
-            test_result=$?
-            if [[ $test_result -eq 0 ]]; then
-                test_results["$test"]="PASS"
-                passed_tests=$((passed_tests + 1))
-            else
-                test_results["$test"]="FAIL"
-            fi
+        if $test; then
+            test_results["$test"]="PASS"
+            passed_tests=$((passed_tests + 1))
         else
-            if $test; then
-                test_results["$test"]="PASS"
-                passed_tests=$((passed_tests + 1))
-            else
-                test_results["$test"]="FAIL"
-            fi
+            test_results["$test"]="FAIL"
         fi
     done
 }
