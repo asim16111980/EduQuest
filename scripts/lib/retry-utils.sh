@@ -68,7 +68,7 @@ wait_for_service() {
             return 0
         fi
 
-        sleep $interval
+        sleep "$interval"
         elapsed=$((elapsed + interval))
         log_debug "Waiting for $service_name... ($elapsed/${timeout}s)"
     done
@@ -88,7 +88,8 @@ wait_for_project_creation() {
 
     while [[ $elapsed -lt $timeout ]]; do
         # Check if project exists and is ACTIVE
-        local status=$(supabase projects list 2>/dev/null | grep "$project_name" | awk '{print $2}')
+        local status
+        status=$(supabase projects list 2>/dev/null | grep "$project_name" | awk '{print $2}')
 
         if [[ "$status" == "ACTIVE" ]]; then
             log_info "Project '$project_name' is ACTIVE!"
@@ -100,7 +101,7 @@ wait_for_project_creation() {
             log_debug "Project is still being created... ($elapsed/${timeout}s)"
         fi
 
-        sleep $interval
+        sleep "$interval"
         elapsed=$((elapsed + interval))
     done
 

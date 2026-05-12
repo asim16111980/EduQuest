@@ -21,7 +21,8 @@ check_cli_installed() {
         return 1
     fi
 
-    if ! local version=$(supabase --version); then
+    local version
+    if ! version=$(supabase --version); then
         log_error "Failed to get Supabase CLI version"
         return 1
     fi
@@ -90,7 +91,8 @@ link_project() {
 
     # Check if already linked and matches the requested ref
     if [[ -f "$PROJECT_LINKED_FLAG" && -f "$PROJECT_REF_FILE" ]]; then
-        local stored_ref=$(cat "$PROJECT_REF_FILE" | tr -d '\n\r')
+        local stored_ref
+        stored_ref=$(cat "$PROJECT_REF_FILE" | tr -d '\n\r')
         if [[ "$stored_ref" == "$project_ref" ]]; then
             log_info "Project already linked with matching ref"
             return 0
@@ -140,7 +142,8 @@ verify_project_setup() {
 
     # Check project link
     if [[ -f "$PROJECT_LINKED_FLAG" ]]; then
-        local stored_ref=$(cat "$PROJECT_REF_FILE" 2>/dev/null | tr -d '\n\r')
+        local stored_ref
+        stored_ref=$(cat "$PROJECT_REF_FILE" 2>/dev/null | tr -d '\n\r')
         if [[ "$stored_ref" == "$project_ref" ]]; then
             log_info "Project already linked with matching ref"
             return 0

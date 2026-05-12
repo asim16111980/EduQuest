@@ -133,9 +133,15 @@ validate_railway_domain() {
     local site_url="${SITE_URL:-}"
 
     # If Railway-only mode is set, enforce Railway domain
-    if [[ -n "$RAILWAY_ONLY" && -n "$site_url" && ! "$site_url" == *.railway.app ]]; then
-        log_warn "Site URL $site_url does not appear to be a Railway domain (RAILWAY_ONLY mode)"
-        return 1
+    if [[ -n "$RAILWAY_ONLY" && -n "$site_url" ]]; then
+        # Normalize site_url to host (strip protocol and path)
+        local host="${site_url#*://}"
+        host="${host%%/*}"
+
+        if [[ "$host" != *.railway.app ]]; then
+            log_warn "Site URL $site_url does not appear to be a Railway domain (RAILWAY_ONLY mode)"
+            return 1
+        fi
     fi
 
     # If no RAILWAY_ONLY, validate as optional HTTP(S) URL

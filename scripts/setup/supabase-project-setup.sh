@@ -12,7 +12,6 @@ source "$(dirname "$0")/../lib/retry-utils.sh"
 
 # Configuration
 DEFAULT_PROJECT_NAME="eduquest-admin"
-DEFAULT_DATABASE_PASSWORD=""
 DEFAULT_REGION="us-east-1"
 ORGANIZATION_NAME="eduquest"
 PASSWORD_FILE=".supabase_db_password"
@@ -44,7 +43,7 @@ validate_inputs() {
 
     # Validate region
     valid_regions=("us-east-1" "us-west-1" "eu-west-1" "ap-southeast-1")
-    if [[ ! " ${valid_regions[@]} " =~ " $region " ]]; then
+    if [[ ! " ${valid_regions[*]} " =~ " $region " ]]; then
         log_error "Invalid region: '$region'"
         echo "Valid regions are: ${valid_regions[*]}"
         exit 1
@@ -75,13 +74,13 @@ create_project() {
     local project_name="$1"
     local db_password="$2"
     local region="$3"
-    local start_time=$(date +%s)
+    local start_time
+    start_time=$(date +%s)
 
     log_info "Creating Supabase project: $project_name"
 
-    # Create project using CLI (password passed via stdin to avoid command line exposure)
-    if echo "$db_password" | supabase projects create "$project_name" \
-        --db-password "$db_password" \
+    # Create project using CLI (password passed via environment variable to avoid /proc exposure)
+    if SUPABASE_DB_PASSWORD="$db_password" supabase projects create "$project_name" \
         --region "$region" \
         --org "$ORGANIZATION_NAME" 2>&1 | grep -q "Created"; then
         log_info "Project creation initiated successfully"

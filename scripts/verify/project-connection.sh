@@ -47,7 +47,7 @@ verify_project_exists() {
 
     if supabase projects list 2>/dev/null | grep -q "$project_ref"; then
         local end_time=$(date +%s%N)
-        local duration=$((($end_time - $start_time) / 1000000))
+        local duration=$(((end_time - start_time) / 1000000))
         log_info "Project exists (took ${duration}ms)"
         return 0
     else
