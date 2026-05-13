@@ -88,17 +88,17 @@ create_mock_data() {
         "activity_logs")
             local mock_data="
 INSERT INTO activity_logs (user_id, action, entity_type, entity_id, metadata, created_at) VALUES
-(1, 'login', 'user', 1, '{\"ip\": \"192.168.1.1\", \"device\": \"desktop\"}', NOW()),
-(2, 'create', 'quiz', 5, '{\"title\": \"Math Quiz\", \"difficulty\": \"medium\"}', NOW()),
-(3, 'update', 'question', 12, '{\"content\": \"Updated question text\"}', NOW());
+(999, 'login', 'user', 1, '{\"ip\": \"192.168.1.1\", \"device\": \"desktop\", \"__test\": true}', NOW()),
+(999, 'create', 'quiz', 5, '{\"title\": \"Math Quiz\", \"difficulty\": \"medium\", \"__test\": true}', NOW()),
+(999, 'update', 'question', 12, '{\"content\": \"Updated question text\", \"__test\": true}', NOW());
 "
             ;;
         "leaderboard_snapshots")
             local mock_data="
 INSERT INTO leaderboard_snapshots (quiz_id, user_id, rank, score, total_users, created_at) VALUES
-(1, 1, 1, 95, 10, NOW()),
-(1, 2, 2, 88, 10, NOW()),
-(1, 3, 3, 82, 10, NOW());
+(1, 999, 1, 95, 10, NOW()),
+(1, 999, 2, 88, 10, NOW()),
+(1, 999, 3, 82, 10, NOW());
 "
             ;;
         *)
@@ -123,8 +123,10 @@ test_realtime_subscription() {
     
     log_info "$log_prefix"
     
-    # This is a basic test - in production you'd use the Realtime SDK
-    # For now, we'll test by inserting data and checking if it appears
+    # Note: This is a basic persistence test - true Realtime subscription testing
+    # would require WebSocket connection and Realtime SDK integration, which is beyond
+    # shell script scope. This test verifies data persistence and basic Realtime setup.
+    # For comprehensive Realtime testing, implement integration tests using the Realtime SDK.
     
     # Insert test data
     local test_data=""
@@ -158,8 +160,8 @@ AND user_id = 999
         return 1
     fi
     
-    # Clean up test data
-    local cleanup="DELETE FROM $table_name WHERE user_id = 999 AND created_at >= NOW() - INTERVAL '1 minute';"
+    # Clean up test data using test marker
+    local cleanup="DELETE FROM $table_name WHERE metadata LIKE '%\"__test\": true%' OR user_id = 999 AND created_at >= NOW() - INTERVAL '1 minute';"
     echo "$cleanup" | supabase db execute
     
     log_success "$log_prefix - Realtime subscription test passed"
@@ -170,7 +172,7 @@ log_info "=== Realtime Verification Started ==="
 
 # Check if Realtime service is available
 log_info "Checking Realtime service availability"
-local realtime_check="supabase realtime list"
+realtime_check="supabase realtime list"
 retry_with_backoff "$realtime_check" 3 5 10 "Check Realtime service" || {
     log_error "Realtime service not available"
     exit 1

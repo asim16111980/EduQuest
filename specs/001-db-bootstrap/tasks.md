@@ -102,8 +102,8 @@ description: "Task list for Database Bootstrap Phase 0A implementation"
 - [X] T020 [P] [US3] Create Realtime setup script in scripts/setup/realtime-setup.sh (implements FR-005)
 - [X] T021 [P] [US3] Configure activity_logs table for Realtime in scripts/setup/realtime-setup.sh
 - [X] T022 [P] [US3] Configure leaderboard_snapshots table for Realtime in scripts/setup/realtime-setup.sh
-- [X] T023 [US3] Create Realtime verification script in scripts/verify-realtime.sh
-- [X] T023.5 [P] [US3] Test Realtime subscription with mock data in scripts/verify-realtime.sh
+- [X] T023 [US3] Create Realtime verification script in scripts/verify/verify-realtime.sh
+- [X] T023.5 [P] [US3] Test Realtime subscription with mock data in scripts/verify/verify-realtime.sh
 - [X] T024 [US3] Add permission configuration for Realtime channels in scripts/setup/realtime-setup.sh
 
 **Checkpoint**: User Stories 1, 2, AND 3 should all work independently

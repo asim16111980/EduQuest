@@ -39,9 +39,10 @@ configure_realtime_table() {
         return 1
     }
     
-    # Add RLS policy for Realtime access
+    # Add RLS policy for Realtime access (idempotent)
     local rls_policy="
-ALTER POLICY \"Enable Realtime access on $table_name\" 
+DROP POLICY IF EXISTS \"Enable Realtime access on $table_name\" ON $table_name;
+CREATE POLICY \"Enable Realtime access on $table_name\" 
 ON $table_name 
 FOR ALL 
 USING (auth.uid() IS NOT NULL);
@@ -70,15 +71,25 @@ configure_realtime_table "leaderboard_snapshots" || {
 # Configure Realtime permissions and channels
 log_info "Configuring Realtime permissions and channels"
 
-# Configure Realtime channel permissions
+# Configure Realtime channel permissions (idempotent)
 local channel_configs="
 # Realtime channel permissions for EduQuest admin dashboard
 
 # Activity logs channel - admin staff only
-ALTER PUBLICATION supabase_realtime ADD TABLE activity_logs;
+DO \$\$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND tablename = 'activity_logs') THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE activity_logs;
+    END IF;
+END \$\$;
 
 # Leaderboard snapshots channel - admin staff only  
-ALTER PUBLICATION supabase_realtime ADD TABLE leaderboard_snapshots;
+DO \$\$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND tablename = 'leaderboard_snapshots') THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE leaderboard_snapshots;
+    END IF;
+END \$\$;
 
 # Set up proper RLS for Realtime access
 "
