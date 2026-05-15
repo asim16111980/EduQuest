@@ -76,6 +76,42 @@ WHERE relname = '$table_name'
     log_success "$log_prefix - RLS policies verified"
 }
 
+# Global variable to track created mock data for cleanup
+CLEANUP_REQUIRED=false
+
+# Function to cleanup mock data
+cleanup_mock_data() {
+    local log_prefix="Cleaning up mock data"
+    
+    log_info "$log_prefix"
+    
+    # Cleanup activity_logs test data
+    local activity_cleanup="
+DELETE FROM activity_logs 
+WHERE user_id = 999 
+AND (metadata->>'__test' = 'true' OR metadata->>'realtime_test' = 'true');
+"
+    
+    # Cleanup leaderboard_snapshots test data  
+    local leaderboard_cleanup="
+DELETE FROM leaderboard_snapshots 
+WHERE quiz_id = 999 AND user_id = 999;
+"
+    
+    echo "$activity_cleanup" | supabase db execute || {
+        log_warning "$log_prefix - Failed to cleanup activity_logs test data"
+    }
+    
+    echo "$leaderboard_cleanup" | supabase db execute || {
+        log_warning "$log_prefix - Failed to cleanup leaderboard_snapshots test data"
+    }
+    
+    log_success "$log_prefix - Mock data cleanup completed"
+}
+
+# Set up cleanup trap
+trap cleanup_mock_data EXIT
+
 # Function to create mock data for testing
 create_mock_data() {
     local table_name="$1"
@@ -200,10 +236,12 @@ COPY (
             log_success "$log_prefix - Realtime event notification received"
             log_info "$log_prefix - Event payload: $notification_content"
         else
-            log_warning "$log_prefix - No notification captured, but data inserted successfully"
+            log_error "$log_prefix - No notification captured despite successful data insertion"
+            return 1
         fi
     else
-        log_warning "$log_prefix - No notification temp file created"
+        log_error "$log_prefix - No notification temp file created - LISTEN/NOTIFY system failed"
+        return 1
     fi
     
     # Verify data was actually inserted as fallback

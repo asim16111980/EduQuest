@@ -44,7 +44,7 @@ configure_realtime_table() {
 DROP POLICY IF EXISTS \"Enable Realtime access on $table_name\" ON $table_name;
 CREATE POLICY \"Enable Realtime access on $table_name\" 
 ON $table_name 
-FOR ALL 
+FOR SELECT 
 USING (auth.uid() IS NOT NULL);
 "
     
@@ -72,7 +72,7 @@ configure_realtime_table "leaderboard_snapshots" || {
 log_info "Configuring Realtime permissions and channels"
 
 # Configure Realtime channel permissions (idempotent)
-local channel_configs="
+channel_configs="
 # Realtime channel permissions for EduQuest admin dashboard
 
 # Activity logs channel - admin staff only
