@@ -6,7 +6,7 @@
 
 ## Overview
 
-This document documents all required environment variables that must be configured in the Railway dashboard for the EduQuest admin dashboard. These variables are required for proper Supabase integration and secure deployment.
+This document lists all required environment variables that must be configured in the Railway dashboard for the EduQuest admin dashboard. These variables are required for proper Supabase integration and secure deployment.
 
 ## Required Variables
 
@@ -48,11 +48,11 @@ This document documents all required environment variables that must be configur
    - Set values from your Supabase dashboard
 
 3. **Variable Order**
-   ```
-   1. SUPABASE_URL
-   2. SUPABASE_ANON_KEY
-   3. SUPABASE_SERVICE_ROLE_KEY
-   ```
+    ```text
+    1. SUPABASE_URL
+    2. SUPABASE_ANON_KEY
+    3. SUPABASE_SERVICE_ROLE_KEY
+    ```
 
 4. **Environment Scope**
    - Set all variables to "Production" scope
@@ -89,7 +89,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
 Run the validation script to ensure proper configuration:
 
 ```bash
-./scripts/verify-env.sh
+./scripts/verify/verify-env.sh
 ```
 
 ## Verification

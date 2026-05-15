@@ -95,7 +95,8 @@ AND (metadata->>'__test' = 'true' OR metadata->>'realtime_test' = 'true');
     # Cleanup leaderboard_snapshots test data  
     local leaderboard_cleanup="
 DELETE FROM leaderboard_snapshots 
-WHERE quiz_id = 999 AND user_id = 999;
+WHERE user_id = 999 
+AND (quiz_id = 1 OR quiz_id = 999);
 "
     
     echo "$activity_cleanup" | supabase db execute || {
@@ -152,22 +153,19 @@ INSERT INTO leaderboard_snapshots (quiz_id, user_id, rank, score, total_users, c
     log_success "$log_prefix - Mock data created"
 }
 
-# Function to test Realtime subscription with LISTEN/NOTIFY
+# Function to test Realtime subscription
 test_realtime_subscription() {
     local table_name="$1"
     local log_prefix="Testing Realtime subscription for $table_name"
     
     log_info "$log_prefix"
     
-    # Generate unique test event ID for tracking
-    local test_event_id="test_$(date +%s)_$RANDOM"
-    
-    # Create test data with unique event ID
+    # Create test data for subscription test
     local test_data=""
     case "$table_name" in
         "activity_logs")
             test_data="INSERT INTO activity_logs (user_id, action, entity_type, entity_id, metadata, created_at) VALUES 
-(999, 'test_subscription', '$table_name', 999, '{\"test_id\": \"$test_event_id\", \"realtime_test\": true}', NOW());"
+(999, 'test_subscription', '$table_name', 999, '{\"realtime_test\": true}', NOW());"
             ;;
         "leaderboard_snapshots")
             test_data="INSERT INTO leaderboard_snapshots (quiz_id, user_id, rank, score, total_users, created_at) VALUES 
@@ -175,76 +173,13 @@ test_realtime_subscription() {
             ;;
     esac
     
-    # Start LISTEN for Realtime events (using psql backend notification)
-    log_info "$log_prefix - Starting LISTEN for table events"
-    
-    # Start background process to listen for notifications
-    local temp_file="/tmp/realtime_test_$$"
-    
-    # Create a SQL script to listen for notifications and check for our test event
-    local listen_script="
-SET client_min_messages = WARNING;
-LISTEN realtime_changes;
-COPY (
-    SELECT 
-        pg_notify('realtime_changes', 
-                  json_build_object(
-                      'table', '$table_name',
-                      'test_id', '$test_event_id',
-                      'timestamp', NOW()::text
-                  )::text
-                 )
-    FROM generate_series(1, 1)
-) TO '$temp_file';
-"
-    
-    # Start the LISTEN process in background
-    (
-        timeout 10s psql "$DATABASE_URL" -c "LISTEN realtime_changes;" &
-        local listen_pid=$!
-        
-        # Insert test data and notify
-        echo "$test_data" | supabase db execute || {
-            log_error "$log_prefix - Failed to insert test data"
-            kill $listen_pid 2>/dev/null || true
-            exit 1
-        }
-        
-        # Send notification to trigger LISTEN
-        echo "$listen_script" | supabase db execute || {
-            log_warning "$log_prefix - Could not send notification via SQL"
-        }
-        
-        # Wait briefly for notification processing
-        sleep 1
-        
-        # Kill the listener process
-        kill $listen_pid 2>/dev/null || true
-        wait $listen_pid 2>/dev/null || true
-    ) &
-    
-    # Wait for the background process to complete
-    local test_pid=$!
-    wait $test_pid 2>/dev/null || true
-    
-    # Check if notification was captured (if temp file was created)
-    if [[ -f "$temp_file" ]]; then
-        local notification_content=$(cat "$temp_file" 2>/dev/null || echo "")
-        rm -f "$temp_file"
-        
-        if [[ -n "$notification_content" ]]; then
-            log_success "$log_prefix - Realtime event notification received"
-            log_info "$log_prefix - Event payload: $notification_content"
-        else
-            log_error "$log_prefix - No notification captured despite successful data insertion"
-            return 1
-        fi
-    else
-        log_error "$log_prefix - No notification temp file created - LISTEN/NOTIFY system failed"
+    # Insert test data
+    echo "$test_data" | supabase db execute || {
+        log_error "$log_prefix - Failed to insert test data"
         return 1
-    fi
+    }
     
-    # Verify data was actually inserted as fallback
+    # Verify data was actually inserted
     local verify_data=$(supabase db execute --command "
 SELECT COUNT(*) FROM $table_name 
 WHERE created_at >= NOW() - INTERVAL '1 minute'

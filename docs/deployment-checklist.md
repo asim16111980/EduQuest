@@ -89,7 +89,7 @@ This checklist ensures all required configurations are properly set up for deplo
 ### 5. Testing and Verification ✅/❌
 
 #### Environment Validation
-- [ ] Run `./scripts/verify-env.sh` and check for success
+- [ ] Run `./scripts/verify/verify-env.sh` and check for success
 - [ ] Verify all environment variables are properly set
 - [ ] Test Railway domain validation passes
 - [ ] Check gitignore configuration is complete
@@ -110,7 +110,7 @@ This checklist ensures all required configurations are properly set up for deplo
 
 ### Phase 1: Final Verification
 1. [ ] Complete all checklist items above
-2. [ ] Run full environment validation: `./scripts/verify-env.sh`
+2. [ ] Run full environment validation: `./scripts/verify/verify-env.sh`
 3. [ ] Test all setup scripts:
    ```bash
    ./scripts/setup/supabase-project-setup.sh
@@ -202,7 +202,7 @@ If deployment fails:
 
 After completing all checklist items and successful deployment:
 
-```
+```text
 Deployer Name: _________________________
 Date: _______________________________
 Deployment Environment: Production

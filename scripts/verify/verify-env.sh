@@ -6,15 +6,24 @@
 
 set -e  # Exit on any error
 
-# Source shared utilities
+# Source shared utilities with enhanced error handling
 source "$(dirname "$0")/../lib/logging.sh"
 source "$(dirname "$0")/../lib/retry-utils.sh"
 source "$(dirname "$0")/../lib/env-validation.sh"
+source "$(dirname "$0")/../lib/error-handling.sh"
+
+# Initialize enhanced error handling
+init_error_handling
 
 # Configuration
 ENV_FILE="${1:-.env.local}"
 GITIGNORE_FILE=".gitignore"
 TEMPLATE_FILE=".env.local.template"
+
+# Initialize enhanced error handling for this script
+ERROR_HANDLING_ENABLED=true
+ERROR_TRACE_ENABLED=true
+init_error_handling
 
 # Function to display usage
 usage() {
@@ -59,9 +68,8 @@ validate_gitignore_secrets() {
         missing_patterns+=(".env.local")
     fi
     
-    if ! grep -q "^\\.env\\.template" "$GITIGNORE_FILE" 2>/dev/null; then
-        missing_patterns+=(".env.template")
-    fi
+    # Don't require .env.template in gitignore as it's a template for users to copy
+    # The template file .env.local.template is typically checked in
     
     # Check for sensitive files
     if ! grep -q "\\.supabase" "$GITIGNORE_FILE" 2>/dev/null; then
@@ -99,7 +107,7 @@ check_git_staged_secrets() {
     fi
     
     # Check for staged environment files
-    local staged_files=$(git diff --cached --name-only | grep -E '\.(env|local|template)$' || true)
+    local staged_files=$(git diff --cached --name-only | grep -E '\.env$|\.env\.(local|production|staging)$' || true)
     
     if [[ -n "$staged_files" ]]; then
         log_error "Sensitive environment files are staged for commit:"
@@ -171,6 +179,12 @@ validate_railway_production() {
 comprehensive_validation() {
     log_info "Starting comprehensive environment validation"
     
+    # Validate environment file exists and is readable
+    if ! validate_file "$ENV_FILE" "read"; then
+        log_error "Cannot read environment file: $ENV_FILE"
+        return 1
+    fi
+    
     # Load environment file if it exists
     if [[ -f "$ENV_FILE" ]]; then
         log_info "Loading environment from: $ENV_FILE"
@@ -179,6 +193,10 @@ comprehensive_validation() {
         log_warn "Environment file not found: $ENV_FILE"
         log_info "Creating from template..."
         if [[ -f "$TEMPLATE_FILE" ]]; then
+            if ! validate_file "$(dirname "$TEMPLATE_FILE")" "write"; then
+                log_error "Cannot write to template directory"
+                return 1
+            fi
             cp "$TEMPLATE_FILE" "$ENV_FILE"
             log_info "Created $ENV_FILE from template"
             log_info "Please edit $ENV_FILE with your actual values before continuing"
@@ -247,7 +265,7 @@ display_environment_summary() {
     fi
     
     if git rev-parse --git-dir > /dev/null 2>&1; then
-        if [[ -z "$(git diff --cached --name-only | grep -E '\.(env|local|template)$')" ]]; then
+        if [[ -z "$(git diff --cached --name-only | grep -E '\.env$|\.env\.(local|production|staging)$')" ]]; then
             echo "  ✓ No sensitive files staged for commit"
         else
             echo "  ✗ Sensitive files staged for commit"
@@ -282,7 +300,7 @@ main() {
     echo "=================================================="
     echo ""
     
-    # Perform validation
+    # Perform validation with enhanced error handling
     if comprehensive_validation; then
         display_environment_summary
         echo "✅ Environment verification PASSED"
@@ -293,9 +311,17 @@ main() {
         echo ""
         echo "Please fix the issues above and run again:"
         echo "  $0 $ENV_FILE"
+        
+        # Log error for analysis
+        log_error "Environment verification failed for: $ENV_FILE"
+        
+        # Exit with error code
         exit 1
     fi
 }
+
+# Initialize error handling when script starts
+init_error_handling
 
 # Run main function with all arguments
 main "$@"

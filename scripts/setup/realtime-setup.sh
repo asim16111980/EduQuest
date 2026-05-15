@@ -73,25 +73,25 @@ log_info "Configuring Realtime permissions and channels"
 
 # Configure Realtime channel permissions (idempotent)
 channel_configs="
-# Realtime channel permissions for EduQuest admin dashboard
+-- Realtime channel permissions for EduQuest admin dashboard
 
-# Activity logs channel - admin staff only
-DO \$\$
+-- Activity logs channel - admin staff only
+DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND tablename = 'activity_logs') THEN
         ALTER PUBLICATION supabase_realtime ADD TABLE activity_logs;
     END IF;
-END \$\$;
+END $$;
 
-# Leaderboard snapshots channel - admin staff only  
-DO \$\$
+-- Leaderboard snapshots channel - admin staff only  
+DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND tablename = 'leaderboard_snapshots') THEN
         ALTER PUBLICATION supabase_realtime ADD TABLE leaderboard_snapshots;
     END IF;
-END \$\$;
+END $$;
 
-# Set up proper RLS for Realtime access
+-- Set up proper RLS for Realtime access
 "
 
 echo "$channel_configs" | supabase db execute || {
@@ -102,7 +102,7 @@ echo "$channel_configs" | supabase db execute || {
 # Test Realtime configuration
 log_info "Verifying Realtime configuration"
 
-local realtime_check="supabase realtime list"
+realtime_check="supabase realtime list"
 retry_with_backoff "$realtime_check" 3 5 10 "Verify Realtime status" || {
     log_error "Failed to verify Realtime configuration"
     exit 1
