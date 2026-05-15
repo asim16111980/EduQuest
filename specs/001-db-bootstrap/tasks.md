@@ -118,12 +118,12 @@ description: "Task list for Database Bootstrap Phase 0A implementation"
 
 ### Implementation for User Story 4
 
-- [ ] T025 [P] [US4] Create Railway environment variables documentation in docs/railway-env-vars.md
-- [ ] T026 [P] [US4] Update .env.local template with all required variables in .env.local.template
-- [ ] T027 [US4] Create environment validation script in scripts/verify-env.sh
-- [ ] T028 [US4] Add gitignore verification to prevent secrets commit in scripts/verify-env.sh
-- [ ] T029 [US4] Create deployment configuration checklist in docs/deployment-checklist.md
-- [ ] T030 [P] [US4] Test auth configuration with login in scripts/test-auth.sh
+- [X] T025 [P] [US4] Create Railway environment variables documentation in docs/railway-env-vars.md
+- [X] T026 [P] [US4] Update .env.local template with all required variables in .env.local.template
+- [X] T027 [US4] Create environment validation script in scripts/verify-env.sh
+- [X] T028 [US4] Add gitignore verification to prevent secrets commit in scripts/verify-env.sh
+- [X] T029 [US4] Create deployment configuration checklist in docs/deployment-checklist.md
+- [X] T030 [P] [US4] Test auth configuration with login in scripts/test-auth.sh
 
 **Checkpoint**: All user stories should now be independently functional
 
