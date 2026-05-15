@@ -6,16 +6,22 @@
 
 set -e  # Exit on any error
 
-# Source shared utilities
+# Source shared utilities with enhanced error handling
 source "$(dirname "$0")/../lib/logging.sh"
 source "$(dirname "$0")/../lib/retry-utils.sh"
 source "$(dirname "$0")/../lib/env-validation.sh"
+source "$(dirname "$0")/../lib/error-handling.sh"
 
 # Configuration
 ENV_FILE="${1:-.env.local}"
 TEST_USER_EMAIL="test@example.com"
 TEST_USER_PASSWORD="test123456"
 CLEANUP_TEST_USER=true
+
+# Initialize enhanced error handling for this script
+ERROR_HANDLING_ENABLED=true
+ERROR_TRACE_ENABLED=true
+init_error_handling
 
 # Function to display usage
 usage() {
@@ -388,7 +394,7 @@ main() {
         exit 1
     fi
     
-    # Perform testing
+    # Perform testing with enhanced error handling
     if comprehensive_auth_test; then
         display_auth_summary
         generate_test_report
@@ -403,9 +409,16 @@ main() {
         echo "  2. Check Supabase project is properly configured"
         echo "  3. Ensure CLI is linked to the project: supabase link --project-ref YOUR_PROJECT_REF"
         echo "  4. Run: $0 $ENV_FILE"
+        
+        # Log error for analysis
+        log_error "Authentication testing failed for: $ENV_FILE"
+        
         exit 1
     fi
 }
+
+# Initialize error handling when script starts
+init_error_handling
 
 # Run main function with all arguments
 main "$@"
