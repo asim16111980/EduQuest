@@ -4,12 +4,14 @@
 # Purpose: Verifies the Supabase project connection and status
 # Usage: ./project-connection.sh [project-ref]
 
-set -e  # Exit on any error
-
-# Source shared utilities
+# Source enhanced error handling
+source "$(dirname "$0")/../lib/error-handling.sh"
 source "$(dirname "$0")/../lib/logging.sh"
 source "$(dirname "$0")/../lib/retry-utils.sh"
 source "$(dirname "$0")/../lib/env-validation.sh"
+
+# Initialize enhanced error handling
+init_error_handling
 
 # Configuration
 CONFIG_FILE=".supabase_config"
@@ -46,13 +48,18 @@ verify_project_exists() {
 
     log_info "Verifying project exists: $project_ref"
 
-    local list_output
-if ! list_output=$(supabase projects list 2>/dev/null); then
+    # Validate command first
+    if ! validate_command "supabase" "Supabase CLI"; then
+        return $?
+    fi
+
+    # Safe execute with retry logic
+    if ! safe_execute "List Supabase projects" 3 2 supabase projects list; then
         log_error "Failed to list projects"
         return 1
     fi
 
-    if echo "$list_output" | grep -q "$project_ref"; then
+    if supabase projects list 2>/dev/null | grep -q "$project_ref"; then
         local end_time
         end_time=$(date +%s%N)
         local duration=$(((end_time - start_time) / 1000000))
@@ -71,13 +78,13 @@ check_project_status() {
 
     log_info "Checking project status..."
 
-    local list_output
-    if ! list_output=$(supabase projects list 2>/dev/null); then
+    # Safe execute with retry logic
+    if ! safe_execute "Check project status" 3 2 supabase projects list; then
         log_error "Failed to list projects"
         return 1
     fi
 
-    status=$(echo "$list_output" | grep "$project_ref" | awk '{print $2}')
+    status=$(supabase projects list 2>/dev/null | grep "$project_ref" | awk '{print $2}')
 
     case $status in
         "ACTIVE")
@@ -106,16 +113,22 @@ test_database_connection() {
 
     log_info "Testing database connection..."
 
-    # Try to connect to the database
-    if supabase db shell --command "SELECT 1;" 2>/dev/null; then
-        local end_time=$(date +%s)
-        local total_duration=$((end_time - start_time))
-        log_info "Database connection successful (took ${total_duration}s)"
-        return 0
-    else
+    # Validate environment variables
+    if ! validate_environment "SUPABASE_URL" "SUPABASE_ANON_KEY"; then
+        log_error "Missing required environment variables for database connection"
+        return 1
+    fi
+
+    # Safe execute with retry logic for database connection
+    if ! safe_execute "Test database connection" 3 2 supabase db shell --command "SELECT 1;"; then
         log_error "Database connection failed"
         return 1
     fi
+
+    local end_time=$(date +%s)
+    local total_duration=$((end_time - start_time))
+    log_info "Database connection successful (took ${total_duration}s)"
+    return 0
 }
 
 # Function to check authentication settings
@@ -124,15 +137,14 @@ check_auth_settings() {
 
     log_info "Checking authentication settings..."
 
-    # This would require the Supabase dashboard API
-    # For now, just verify auth is configured
-    if supabase auth list &> /dev/null; then
-        log_info "Authentication service is accessible"
-        return 0
-    else
+    # Safe execute with retry logic
+    if ! safe_execute "Check authentication service" 3 2 supabase auth list; then
         log_warn "Cannot verify authentication settings (CLI limitation)"
         return 0
     fi
+
+    log_info "Authentication service is accessible"
+    return 0
 }
 
 # Function to verify CLI linking
@@ -142,12 +154,21 @@ verify_cli_linking() {
     log_info "Verifying CLI linking..."
 
     # Check if .env file exists and has correct URL
-    if [[ -f ".env" ]] || [[ -f ".env.local" ]]; then
-        local env_file=""
-        if [[ -f ".env.local" ]]; then
-            env_file=".env.local"
-        else
-            env_file=".env"
+    local env_files=(".env.local" ".env")
+    local env_file=""
+    
+    for file in "${env_files[@]}"; do
+        if [[ -f "$file" ]]; then
+            env_file="$file"
+            break
+        fi
+    done
+
+    if [[ -n "$env_file" ]]; then
+        # Validate file before reading
+        if ! validate_file "$env_file" "read"; then
+            log_error "Cannot read environment file: $env_file"
+            return 1
         fi
 
         # Check if URL matches project
@@ -172,16 +193,9 @@ check_env_variables() {
 
     log_info "Checking environment variables..."
 
-    for var in "${required_vars[@]}"; do
-        if [[ -z "${!var}" ]]; then
-            missing_vars+=("$var")
-        else
-            log_debug "$var is set"
-        fi
-    done
-
-    if [[ ${#missing_vars[@]} -gt 0 ]]; then
-        log_error "Missing required environment variables: ${missing_vars[*]}"
+    # Use enhanced environment validation
+    if ! validate_environment "${required_vars[@]}"; then
+        log_error "Missing required environment variables"
         return 1
     fi
 
@@ -277,6 +291,12 @@ main() {
         load_config
 
         if [[ -f "$PROJECT_REF_FILE" ]]; then
+            # Validate file before reading
+            if ! validate_file "$PROJECT_REF_FILE" "read"; then
+                log_error "Cannot read project reference file"
+                return 1
+            fi
+            
             project_ref=$(cat "$PROJECT_REF_FILE")
             log_info "Using project ref from $PROJECT_REF_FILE: $project_ref"
         elif [[ -n "$PROJECT_REF" ]]; then

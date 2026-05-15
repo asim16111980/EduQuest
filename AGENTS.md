@@ -85,3 +85,8 @@ This repo uses Speckit for structured development:
 3. **Idempotency**: Scripts are designed to be rerun safely (DROP IF EXISTS patterns)
 4. **Realtime Testing**: Uses pg_notify, not WebSocket directly (shell script limitation)
 5. **Cleanup**: Test data includes `__test: true` marker for cleanup
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->

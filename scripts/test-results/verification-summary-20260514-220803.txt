@@ -1,0 +1,42 @@
+EduQuest Verification Script Test Summary
+Generated: Thu May 14 22:08:06 EDT 2026
+================================================
+
+Test Results Summary:
+Total Tests: 16
+Passed: 12
+Failed: 4
+Success Rate: 75%
+
+Individual Test Results:
+================================================
+✅ security-verification.sh_missing: PASS
+✅ project-connection.sh_missing: PASS
+✅ env_validation: PASS
+✅ test-auth.sh_missing: PASS
+✅ security-verification.sh_invalid: PASS
+✅ safe_execute_fail: PASS
+✅ command_validation: PASS
+❌ verify-env.sh_valid: FAIL
+✅ project-connection.sh_invalid: PASS
+✅ test-auth.sh_invalid: PASS
+✅ file_validation: PASS
+✅ verify-env.sh_missing: PASS
+✅ verify-env.sh_invalid: PASS
+❌ security-verification.sh_valid: FAIL
+❌ test-auth.sh_valid: ERROR
+❌ project-connection.sh_valid: FAIL
+
+Test Log Files:
+================================================
+-rw-r--r-- 1 tasse 197609 57 May 14 22:08 test-results/project-connection.sh-invalid.log
+-rw-r--r-- 1 tasse 197609 57 May 14 22:08 test-results/project-connection.sh-missing.log
+-rw-r--r-- 1 tasse 197609 57 May 14 22:08 test-results/project-connection.sh-valid.log
+-rw-r--r-- 1 tasse 197609 60 May 14 22:08 test-results/security-verification.sh-invalid.log
+-rw-r--r-- 1 tasse 197609 60 May 14 22:08 test-results/security-verification.sh-missing.log
+-rw-r--r-- 1 tasse 197609 60 May 14 22:08 test-results/security-verification.sh-valid.log
+-rw-r--r-- 1 tasse 197609 72 May 14 22:08 test-results/test-auth.sh-invalid.log
+-rw-r--r-- 1 tasse 197609 72 May 14 22:08 test-results/test-auth.sh-missing.log
+-rw-r--r-- 1 tasse 197609 49 May 14 22:08 test-results/verify-env.sh-invalid.log
+-rw-r--r-- 1 tasse 197609 49 May 14 22:08 test-results/verify-env.sh-missing.log
+-rw-r--r-- 1 tasse 197609 49 May 14 22:08 test-results/verify-env.sh-valid.log
