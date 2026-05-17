@@ -159,9 +159,9 @@ run_validation_scripts() {
     log_info "Running pre-deployment validation scripts"
     
     local scripts=(
-        "./scripts/verify/verify-env.sh"
-        "./scripts/verify/project-connection.sh"
-        "./scripts/verify/security-verification.sh"
+        "${SCRIPT_DIR}/../scripts/verify/verify-env.sh"
+        "${SCRIPT_DIR}/../scripts/verify/project-connection.sh"
+        "${SCRIPT_DIR}/../scripts/verify/security-verification.sh"
     )
     
     for script in "${scripts[@]}"; do
@@ -172,7 +172,8 @@ run_validation_scripts() {
                 return 1
             fi
         else
-            log_warn "Validation script not found: $script"
+            log_error "Validation script not found: $script"
+            return 1
         fi
     done
     
@@ -195,6 +196,8 @@ deploy_to_railway() {
     if [[ "$ENVIRONMENT" == "staging" ]]; then
         railway_env="staging"
     fi
+    
+    export RAILWAY_ENVIRONMENT="$railway_env"
     
     # Deploy to Railway
     log_info "Deploying to ${railway_env} environment"
@@ -221,8 +224,8 @@ verify_deployment() {
         return 0
     fi
     
-    # Test if the application is responding
-    local http_code=$(curl -s -o /dev/null -w "%{http_code}" "$deployment_url" 2>/dev/null || echo "000")
+    # Test if the application is responding with timeout to prevent hanging
+    local http_code=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 10 "$deployment_url" 2>/dev/null || echo "000")
     
     if [[ "$http_code" -ge 200 && "$http_code" -lt 300 ]]; then
         log_success "Deployment verified - application responding (HTTP $http_code)"
