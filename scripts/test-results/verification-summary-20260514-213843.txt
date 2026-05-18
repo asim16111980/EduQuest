@@ -1,0 +1,32 @@
+EduQuest Verification Script Test Summary
+Generated: Thu May 14 21:38:45 EDT 2026
+================================================
+
+Test Results Summary:
+Total Tests: 16
+Passed: 12
+Failed: 4
+Success Rate: 75%
+
+Individual Test Results:
+================================================
+✅ security-verification.sh_missing: PASS
+✅ project-connection.sh_missing: PASS
+✅ env_validation: PASS
+✅ test-auth.sh_missing: PASS
+✅ security-verification.sh_invalid: PASS
+✅ safe_execute_fail: PASS
+✅ command_validation: PASS
+❌ verify-env.sh_valid: ERROR
+✅ project-connection.sh_invalid: PASS
+✅ test-auth.sh_invalid: PASS
+✅ file_validation: PASS
+✅ verify-env.sh_missing: PASS
+✅ verify-env.sh_invalid: PASS
+❌ security-verification.sh_valid: ERROR
+❌ test-auth.sh_valid: ERROR
+❌ project-connection.sh_valid: ERROR
+
+Test Log Files:
+================================================
+No log files found

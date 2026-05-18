@@ -79,13 +79,13 @@ description: "Task list for Database Bootstrap Phase 0A implementation"
 
 ### Implementation for User Story 2
 
-- [ ] T014 [P] [US2] Create security configuration script in scripts/setup/security-config.sh
-- [ ] T015 [P] [US2] Create RLS enablement SQL script in sql/enable-rls.sql
-- [ ] T016 [US2] Implement authentication configuration in scripts/setup/security-config.sh
-- [ ] T017 [US2] Create site URL configuration for Railway domain in scripts/setup/security-config.sh
-- [ ] T018 [US2] Create security verification script in scripts/verify/security-verification.sh
-- [ ] T019 [US2] Add PKCE flow enablement in scripts/setup/security-config.sh
-- [ ] T019.5 [P] [US2] Measure RLS enablement time in scripts/verify/security-verification.sh
+- [X] T014 [P] [US2] Create security configuration script in scripts/setup/security-config.sh
+- [X] T015 [P] [US2] Create RLS enablement SQL script in sql/enable-rls.sql
+- [X] T016 [US2] Implement authentication configuration in scripts/setup/security-config.sh
+- [X] T017 [US2] Create site URL configuration for Railway domain in scripts/setup/security-config.sh
+- [X] T018 [US2] Create security verification script in scripts/verify/security-verification.sh
+- [X] T019 [US2] Add PKCE flow enablement in scripts/setup/security-config.sh
+- [X] T019.5 [P] [US2] Measure RLS enablement time in scripts/verify/security-verification.sh
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -99,12 +99,12 @@ description: "Task list for Database Bootstrap Phase 0A implementation"
 
 ### Implementation for User Story 3
 
-- [ ] T020 [P] [US3] Create Realtime setup script in scripts/setup/realtime-setup.sh (implements FR-005)
-- [ ] T021 [P] [US3] Configure activity_logs table for Realtime in scripts/setup/realtime-setup.sh
-- [ ] T022 [P] [US3] Configure leaderboard_snapshots table for Realtime in scripts/setup/realtime-setup.sh
-- [ ] T023 [US3] Create Realtime verification script in scripts/verify-realtime.sh
-- [ ] T023.5 [P] [US3] Test Realtime subscription with mock data in scripts/verify-realtime.sh
-- [ ] T024 [US3] Add permission configuration for Realtime channels in scripts/setup/realtime-setup.sh
+- [X] T020 [P] [US3] Create Realtime setup script in scripts/setup/realtime-setup.sh (implements FR-005)
+- [X] T021 [P] [US3] Configure activity_logs table for Realtime in scripts/setup/realtime-setup.sh
+- [X] T022 [P] [US3] Configure leaderboard_snapshots table for Realtime in scripts/setup/realtime-setup.sh
+- [X] T023 [US3] Create Realtime verification script in scripts/verify/verify-realtime.sh
+- [X] T023.5 [P] [US3] Test Realtime subscription with mock data in scripts/verify/verify-realtime.sh
+- [X] T024 [US3] Add permission configuration for Realtime channels in scripts/setup/realtime-setup.sh
 
 **Checkpoint**: User Stories 1, 2, AND 3 should all work independently
 
@@ -118,12 +118,12 @@ description: "Task list for Database Bootstrap Phase 0A implementation"
 
 ### Implementation for User Story 4
 
-- [ ] T025 [P] [US4] Create Railway environment variables documentation in docs/railway-env-vars.md
-- [ ] T026 [P] [US4] Update .env.local template with all required variables in .env.local.template
-- [ ] T027 [US4] Create environment validation script in scripts/verify-env.sh
-- [ ] T028 [US4] Add gitignore verification to prevent secrets commit in scripts/verify-env.sh
-- [ ] T029 [US4] Create deployment configuration checklist in docs/deployment-checklist.md
-- [ ] T030 [P] [US4] Test auth configuration with login in scripts/test-auth.sh
+- [X] T025 [P] [US4] Create Railway environment variables documentation in docs/railway-env-vars.md
+- [X] T026 [P] [US4] Update .env.local template with all required variables in .env.local.template
+- [X] T027 [US4] Create environment validation script in scripts/verify/verify-env.sh
+- [X] T028 [US4] Add gitignore verification to prevent secrets commit in scripts/verify/verify-env.sh
+- [X] T029 [US4] Create deployment configuration checklist in docs/deployment-checklist.md
+- [X] T030 [P] [US4] Test auth configuration with login in scripts/test-auth.sh
 
 **Checkpoint**: All user stories should now be independently functional
 
@@ -133,12 +133,12 @@ description: "Task list for Database Bootstrap Phase 0A implementation"
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T031 [P] Update quickstart.md with verification steps in specs/001-db-bootstrap/quickstart.md
-- [ ] T032 [P] Create comprehensive setup documentation in docs/
-- [ ] T033 Create troubleshooting guide in docs/troubleshooting.md
-- [ ] T034 [P] Add error handling improvements across all scripts
-- [ ] T035 Create deployment automation script in scripts/deploy.sh
-- [ ] T036 [P] Add comprehensive test coverage for all verification scripts
+- [X] T031 [P] Update quickstart.md with verification steps in specs/001-db-bootstrap/quickstart.md
+- [X] T032 [P] Create comprehensive setup documentation in docs/
+- [X] T033 Create troubleshooting guide in docs/troubleshooting.md
+- [X] T034 [P] Add error handling improvements across all scripts
+- [X] T035 Create deployment automation script in scripts/deploy.sh
+- [X] T036 [P] Add comprehensive test coverage for all verification scripts
 
 ---
 

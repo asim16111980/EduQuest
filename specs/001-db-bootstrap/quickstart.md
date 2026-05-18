@@ -111,6 +111,55 @@ supabase status
 
 ## Verification
 
+### Complete Environment Validation
+
+After completing the setup scripts, run the comprehensive environment validation:
+
+```bash
+# Validate environment variables and security configuration
+./scripts/verify/verify-env.sh
+
+# Expected output:
+# ==================================================
+#   EduQuest Environment Variable Verification
+# ==================================================
+# [✓] Environment file .env.local exists
+# [✓] SUPABASE_URL is set: https://your-project-ref.supabase.co
+# [✓] SUPABASE_ANON_KEY is set (first 20 chars): eyJhbGciOiJIUzI1NiIs...
+# [✓] SUPABASE_SERVICE_ROLE_KEY is set (first 20 chars): eyJhbGciOiJIUzI1NiIs...
+# [✓] Gitignore properly configured for secrets protection
+# [✓] No sensitive files are staged for commit
+# [✓] Railway production configuration is valid
+# ✅ Environment validation PASSED
+```
+
+### Test Authentication Configuration
+
+```bash
+# Test authentication with the new test script
+./scripts/test-auth.sh
+
+# Expected output:
+# ==================================================
+#   EduQuest Authentication Configuration Test
+# ==================================================
+# [✓] Environment file .env.local exists
+# [✓] SUPABASE_URL is set: https://your-project-ref.supabase.co
+# [✓] SUPABASE_ANON_KEY is present
+# [✓] SUPABASE_SERVICE_ROLE_KEY is present
+# [✓] Environment variables protected in gitignore
+# [✓] .env.local is untracked (good - not committed)
+# [✓] Railway domain configured
+# Authentication testing resources READY
+```
+
+### Check Project Connection
+
+```bash
+# Should show project details
+supabase projects list
+```
+
 ### Check Project Connection
 
 ```bash
@@ -121,25 +170,23 @@ supabase projects list
 ### Test Authentication
 
 ```bash
-# Test with Supabase Auth
-node -e "
-const { createClient } = require('@supabase/supabase-js');
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
-supabase.auth.signUp({ email: 'test@example.com', password: 'test123' })
-  .then(({ data, error }) => {
-    if (error) {
-      console.error('Auth error:', error);
-      process.exit(1);
-    } else {
-      console.log('User created:', data.user);
-      process.exit(0);
-    }
-  })
-  .catch((error) => {
-    console.error('Unexpected error:', error);
-    process.exit(1);
-  });
-"
+# Use the new authentication test script
+./scripts/test-auth.sh --no-cleanup
+
+# This will:
+# 1. Create a test user
+# 2. Test authentication flow
+# 3. Validate session management
+# 4. Clean up the test user (unless --no-cleanup is used)
+```
+
+### Verify Environment Variables
+
+```bash
+# Check Railway environment variables (if deployed)
+echo "SUPABASE_URL: ${SUPABASE_URL:0:20}..."
+echo "SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:0:20}..."
+echo "SUPABASE_SERVICE_ROLE_KEY: [REDACTED - Server Only]"
 ```
 
 ### Verify Realtime
@@ -147,6 +194,77 @@ supabase.auth.signUp({ email: 'test@example.com', password: 'test123' })
 1. Go to Supabase Dashboard → Realtime
 2. Check that both tables are enabled
 3. Verify channels are configured
+
+### Run Final Validation
+
+```bash
+# Run comprehensive validation suite
+./scripts/verify/verify-env.sh
+./scripts/test-auth.sh
+
+# Generate deployment checklist
+cat docs/deployment-checklist.md | head -30
+```
+
+### Check Git Status (Security Check)
+
+```bash
+# Ensure no sensitive files are committed
+git status --porcelain | grep -E "^\?\?.*\.env"
+# Should show .env.local as untracked
+
+# Check gitignore protection
+grep "\.env" .gitignore
+# Should show .env patterns
+```
+
+## Next Steps
+
+### 1. Deployment Preparation
+
+```bash
+# Review deployment checklist
+cat docs/deployment-checklist.md
+
+# Test deployment script (if available)
+# ./scripts/deploy.sh --dry-run
+```
+
+### 2. Documentation Review
+
+```bash
+# Review all documentation
+ls docs/
+# Should include:
+# - railway-env-vars.md
+# - deployment-checklist.md
+# - troubleshooting.md (if created)
+```
+
+### 3. Environment Variables Setup
+
+For production deployment, ensure these are set in Railway dashboard:
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY` 
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+### 4. Final Verification Checklist
+
+- [ ] All environment variables are properly configured
+- [ ] Authentication test passes
+- [ ] Realtime is working
+- [ ] No sensitive data committed to git
+- [ ] Deployment checklist is complete
+- [ ] All documentation is up-to-date
+
+## Troubleshooting
+
+If any verification steps fail:
+
+1. **Environment Issues**: Run `./scripts/verify/verify-env.sh` for detailed errors
+2. **Authentication Issues**: Run `./scripts/test-auth.sh` for auth-specific errors
+3. **Connection Issues**: Check `supabase status` and project linking
+4. **Realtime Issues**: Verify table configuration in Supabase dashboard
 
 ### Environment Variables Check
 
