@@ -37,7 +37,7 @@ cd eduquest-admin
 
 ```bash
 # Core dependencies
-npm install @supabase/supabase-js @supabase/auth-helpers-nextjs
+npm install @supabase/supabase-js @supabase/ssr
 
 # Development dependencies
 npm install --save-dev @types/node @types/react @types/react-dom
@@ -148,23 +148,43 @@ mkdir -p src/styles
 Create `src/lib/supabase/server.ts`:
 
 ```typescript
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
 export async function createClient() {
   const cookieStore = await cookies()
   
-  return createServerComponentClient({
-    cookies: () => cookieStore,
-    supabaseKey: process.env.SUPABASE_ANON_KEY!,
-  })
+  return createServerClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            )
+          } catch {
+            // The `setAll` method was called from a Server Component.
+            // This can be called from a Server Component. The special logic
+            // for this method is implemented in the client.
+          }
+        },
+      },
+    }
+  )
 }
 ```
 
 Create `src/lib/supabase/client.ts`:
 
 ```typescript
-import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
+'use client'
+
+import { createBrowserClient } from '@supabase/supabase-js'
 
 export function createClient() {
   return createBrowserClient(
@@ -177,7 +197,7 @@ export function createClient() {
 Create `src/lib/supabase/middleware.ts`:
 
 ```typescript
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
+import { createMiddlewareClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 

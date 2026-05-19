@@ -2,8 +2,7 @@
 
 **Feature Branch**: `002-dev-bootstrap`  
 **Created**: 2026-05-18  
-**Status**: Planning  
-**Input**: User description: "read phase 0B from @docs/implementation-plan.md and according to the best practices for github's speckit create the first spec Only"
+**Status**: Planning
 
 ## Clarifications
 
@@ -158,5 +157,8 @@ As a developer, I need a CI/CD pipeline configured so that code changes are auto
 - The project follows the directory structure specified in the Constitution
 - Environment variables are properly configured in `.env.local`
 - Railway deployment is configured with the required environment variables
-- The project uses the exact stack specified in Constitution §2 (Next.js 15, TypeScript strict, Tailwind v4)
+- The project uses the exact stack specified in Constitution §2 (Next.js 15, TypeScript strict, Tailwind CSS 3.4.0)
+- React 19 is required as the runtime dependency for Next.js 15
+- Next.js 15 converts request APIs to async—`cookies()`, `headers()`, `draftMode()`, `params`, and `searchParams` must be awaited—so implementers must refactor code accordingly
+- Migration note: Use `@next/codemod@latest next-async-request-api` utility for automated fixes to request API changes
 - All Supabase migrations from Phase 1 are completed before this phase begins

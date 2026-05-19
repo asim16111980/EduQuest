@@ -13,22 +13,36 @@ echo "   EduQuest Phase 0A Verification"
 echo "================================================"
 echo ""
 
+# Verification flags
+FAILED=0
+PROJECT_REF=""
+PROJECT_STATUS=""
+
 # Check 1: Supabase Project Exists
 echo "1. Checking Supabase project existence..."
-if supabase projects list 2>/dev/null | grep -q "eduquest"; then
-    echo "✅ Supabase project 'eduquest' exists"
+PROJECT_JSON=$(supabase projects list --json 2>/dev/null | grep eduquest || true)
 
-    # Get project details
-    PROJECT_REF=$(supabase projects list | grep eduquest | awk '{print $4}' | head -1)
-    echo "   Project Reference: $PROJECT_REF"
+if [[ -n "$PROJECT_JSON" ]]; then
+    echo "✅ Supabase project 'eduquest' exists"
+    
+    # Parse project details from JSON
+    PROJECT_REF=$(echo "$PROJECT_JSON" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)
+    PROJECT_STATUS=$(echo "$PROJECT_JSON" | grep -o '"status":"[^"]*"' | head -1 | cut -d'"' -f4)
+    
+    if [[ -n "$PROJECT_REF" ]]; then
+        echo "   Project Reference: $PROJECT_REF"
+    else
+        echo "❌ Failed to extract project reference"
+        FAILED=1
+    fi
 
     # Check project status
-    STATUS=$(supabase projects list | grep eduquest | awk '{print $1}')
-    if [[ "$STATUS" == "●" ]]; then
+    if [[ "$PROJECT_STATUS" == "active" ]]; then
         echo "✅ Project is active/linked"
     else
-        echo "⚠️  Project is paused - requires admin unpause from dashboard"
+        echo "❌ Project is paused ($PROJECT_STATUS) - requires admin unpause from dashboard"
         echo "   Dashboard: https://supabase.com/dashboard/project/$PROJECT_REF"
+        FAILED=1
     fi
 else
     echo "❌ Supabase project 'eduquest' not found"
@@ -43,7 +57,8 @@ if [[ -f "supabase/config.toml" ]]; then
     if grep -q "ref = \"$PROJECT_REF\"" supabase/config.toml; then
         echo "✅ Project reference correctly configured"
     else
-        echo "⚠️  Project reference not configured in config.toml"
+        echo "❌ Project reference not configured in config.toml"
+        FAILED=1
     fi
 else
     echo "❌ supabase/config.toml not found"
@@ -137,7 +152,19 @@ echo "8. Checking CLI authentication..."
 if supabase login status >/dev/null 2>&1; then
     echo "✅ Supabase CLI is authenticated"
 else
-    echo "⚠️  Supabase CLI not authenticated - run 'supabase login'"
+    echo "❌ Supabase CLI not authenticated - run 'supabase login'"
+    FAILED=1
+fi
+
+# Final verification check
+if [[ $FAILED -eq 1 ]]; then
+    echo ""
+    echo "================================================"
+    echo "   Phase 0A Verification FAILED"
+    echo "================================================"
+    echo ""
+    echo "Please address the issues above before proceeding."
+    exit 1
 fi
 
 echo ""
