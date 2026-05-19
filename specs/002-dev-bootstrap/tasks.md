@@ -163,22 +163,15 @@ description: "Task list for Development Bootstrap for EduQuest Admin Dashboard"
 - [ ] T065 [US5] Verify all checks pass: lint, type check, build
 - [ ] T066 [US5] Test auto-deployment on merge to main
 - [ ] T067 [US5] Verify Railway deployment completes within 5 minutes
-
----
-
-## Phase 8: Polish & Cross-Cutting Concerns
-
-**Purpose**: Improvements that affect multiple user stories
-
-- [ ] T067 [P] Update documentation with setup guide in docs/
-- [ ] T068 [P] Run quickstart.md verification script
-- [ ] T069 [P] Optimize bundle size with @next/bundle-analyzer
-- [ ] T070 [P] Add error boundaries around dashboard sections (Constitution requirement)
-- [ ] T071 [P] Implement performance monitoring for 100 concurrent users
-- [ ] T072 [P] Add unit tests for critical components (if requested)
-- [ ] T073 [P] Add structured logging utility (Constitution requirement)
-- [ ] T074 Security hardening and audit
-- [ ] T075 Final performance optimization and LCP target validation
+- [ ] T068 [P] Update documentation with setup guide in docs/
+- [ ] T069 [P] Run quickstart.md verification script
+- [ ] T070 [P] Optimize bundle size with @next/bundle-analyzer
+- [ ] T071 [P] Add error boundaries around dashboard sections (Constitution requirement)
+- [ ] T072 [P] Implement performance monitoring for 100 concurrent users
+- [ ] T073 [P] Add unit tests for critical components (if requested)
+- [ ] T074 [P] Add structured logging utility (Constitution requirement)
+- [ ] T075 Security hardening and audit
+- [ ] T076 Final performance optimization and LCP target validation
 
 ---
 
@@ -196,7 +189,7 @@ description: "Task list for Development Bootstrap for EduQuest Admin Dashboard"
 ### User Story Dependencies
 
 - **User Story 1 (P1)**: Can start after Foundational (Phase 2) - No dependencies on other stories
-- **User Story 2 (P1)**: Can start after Foundational (Phase 2) - Depends on US1 for project structure
+- **User Story 2 (P1)**: Can start after Foundational (Phase 2) - No dependencies on other stories
 - **User Story 3 (P2)**: Can start after Foundational (Phase 2) - Depends on US2 for authentication
 - **User Story 4 (P2)**: Can start after Foundational (Phase 2) - Depends on US2 for database types
 - **User Story 5 (P3)**: Can start after Foundational (Phase 2) - No dependencies on other stories
